@@ -15,6 +15,10 @@ RadChat is the user interface only. It renders a chat window that can float, doc
 
 ## Try the demo
 
+**Live demo: <https://radchat.guidoo.app>**
+
+To run it locally:
+
 ```bash
 git clone https://github.com/The01Geek/radchat.git
 cd radchat
