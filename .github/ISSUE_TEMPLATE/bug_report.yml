@@ -1,0 +1,40 @@
+name: Bug report
+description: Something isn't working
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: RadChat version or commit
+      description: The version in package.json, or the commit you installed from
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: React version, bundler, and browser (e.g. React 19.2, Vite 7, Chrome 141)
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Widget options (secrets and URLs redacted)
+      render: tsx
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output / stack trace
+      render: shell

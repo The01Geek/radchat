@@ -1,0 +1,67 @@
+/**
+ * Typing Indicator Styles
+ *
+ * Animated "thinking" dots shown while awaiting AI response.
+ * Supports prefers-reduced-motion for accessibility.
+ */
+
+/* Bounce animation for typing dots */
+@keyframes radchat-typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Container for typing indicator dots */
+.radchat-typing-indicator {
+  display: flex;
+  gap: 5px;
+  padding: 4px 0;
+  align-items: center;
+}
+
+/* Individual dot styling */
+.radchat-typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--radchat-text-muted, #6b7280);
+  animation: radchat-typing-bounce 1.4s infinite ease-in-out;
+}
+
+/* Staggered animation delays for wave effect */
+.radchat-typing-indicator span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.radchat-typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.radchat-typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Respect reduced motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .radchat-typing-indicator span {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  /* Pulse opacity instead of bounce for reduced motion */
+  .radchat-typing-indicator span:nth-child(1) {
+    opacity: 1;
+  }
+
+  .radchat-typing-indicator span:nth-child(2) {
+    opacity: 0.7;
+  }
+
+  .radchat-typing-indicator span:nth-child(3) {
+    opacity: 0.4;
+  }
+}

@@ -1,0 +1,255 @@
+/* Attachment Picker Styles */
+
+.radchat-attachment-picker {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Toggle Button — mirrors .react-chatbot-kit-chat-btn-send styling */
+.radchat-attachment-picker-toggle {
+  background: var(--radchat-background-color, #fff);
+  border: 1px solid var(--radchat-border-color, #e0e0e0);
+  border-radius: var(--radchat-radius-lg, 12px);
+  padding: var(--radchat-space-3, 10px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.15s ease;
+  color: var(--radchat-text-muted, #6b7280);
+}
+
+.radchat-attachment-picker-toggle:hover {
+  border-color: var(--radchat-primary-color, #2563eb);
+  color: var(--radchat-primary-color, #2563eb);
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.radchat-attachment-picker-toggle:active {
+  transform: scale(0.98);
+}
+
+.radchat-attachment-icon-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Attachment Count Badge */
+.radchat-attachment-count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #ff4444;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Attachment Menu */
+.radchat-attachment-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 6px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.radchat-attachment-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.radchat-attachment-menu-close {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #666;
+}
+
+.radchat-attachment-menu-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #000;
+}
+
+/* Attachment Options — compact list layout */
+.radchat-attachment-options {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.radchat-attachment-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  gap: 8px;
+}
+
+.radchat-attachment-option:hover {
+  background: #f0f4ff;
+}
+
+.radchat-attachment-option-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.radchat-attachment-option-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: #333;
+}
+
+/* Chips row — full-width above the form */
+.radchat-attachment-chips-row {
+  padding: 0 4px;
+}
+
+.radchat-attachment-chips-row:empty {
+  display: none;
+}
+
+.radchat-attachment-error {
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--radchat-error-bg, #fef2f2);
+  color: var(--radchat-error-text, #991b1b);
+}
+
+.radchat-attachment-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Individual chip — compact inline tag */
+.radchat-attachment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px 2px 2px;
+  background: #f0f4ff;
+  border: 1px solid #d0d8e8;
+  border-radius: 4px;
+  font-size: 12px;
+  max-width: 180px;
+}
+
+.radchat-attachment-chip-thumb {
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.radchat-attachment-chip-icon {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+  padding-left: 2px;
+}
+
+.radchat-attachment-chip-badge {
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+  color: #fff;
+  background: var(--radchat-primary-color, #2563eb);
+}
+
+.radchat-attachment-chip-name {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
+  cursor: pointer;
+}
+
+.radchat-attachment-chip-name:hover {
+  color: var(--radchat-primary-color, #2563eb);
+  text-decoration: underline;
+}
+
+.radchat-attachment-chip-remove {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: #999;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.radchat-attachment-chip-remove:hover {
+  background-color: #ff4444;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .radchat-attachment-menu {
+    min-width: 240px;
+  }
+
+  .radchat-attachment-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .radchat-attachment-option-icon {
+    font-size: 24px;
+  }
+
+  .radchat-attachment-option-label {
+    font-size: 11px;
+  }
+}

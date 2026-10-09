@@ -1,0 +1,1176 @@
+/*
+ * RadChat widget styles: design tokens, launcher, shell, header and menu,
+ * messages, resize handles, slash autocomplete, and the sidebar and
+ * fullscreen layouts. Override the --radchat-* tokens to theme the widget.
+ */
+
+/* ============================================
+   Design Tokens & CSS Variables
+   ============================================ */
+:root {
+  /* Primary Colors */
+  --radchat-primary-color: #2563eb;
+  --radchat-primary-color-hover: #1d4ed8;
+  --radchat-primary-color-light: #dbeafe;
+  --radchat-primary-color-dark: #1e40af;
+
+  /* Neutral Colors */
+  --radchat-text-color: #1e293b;
+  --radchat-text-secondary: #64748b;
+  --radchat-text-muted: #94a3b8;
+  --radchat-background-color: #ffffff;
+  --radchat-background-secondary: #f8fafc;
+  --radchat-background-tertiary: #f1f5f9;
+
+  /* Semantic Colors */
+  --radchat-success-bg: #dcfce7;
+  --radchat-success-text: #166534;
+  --radchat-error-bg: #fef2f2;
+  --radchat-error-text: #991b1b;
+  --radchat-error-color: #ef4444;
+
+  /* Border Colors */
+  --radchat-border-color: #e2e8f0;
+  --radchat-border-color-light: #f1f5f9;
+  --radchat-border-color-focus: #2563eb;
+
+  /* Shadows */
+  --radchat-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --radchat-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --radchat-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --radchat-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --radchat-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Transitions */
+  --radchat-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --radchat-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --radchat-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --radchat-transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Border Radius */
+  --radchat-radius-sm: 6px;
+  --radchat-radius-md: 8px;
+  --radchat-radius-lg: 12px;
+  --radchat-radius-xl: 16px;
+  --radchat-radius-full: 9999px;
+
+  /* Spacing */
+  --radchat-space-1: 4px;
+  --radchat-space-2: 8px;
+  --radchat-space-3: 12px;
+  --radchat-space-4: 16px;
+  --radchat-space-5: 20px;
+  --radchat-space-6: 24px;
+}
+
+/* ============================================
+   Widget Container
+   ============================================ */
+.radchat-widget {
+  z-index: 2147483647 !important; /* Maximum z-index value ensures widget is always on top */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   Toggle Button (Floating Action Button)
+   ============================================ */
+.radchat-toggle-button {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radchat-radius-full);
+  background: linear-gradient(135deg, var(--radchat-primary-color) 0%, var(--radchat-primary-color-dark) 100%);
+  color: white;
+  border: none;
+  box-shadow: var(--radchat-shadow-lg), 0 0 0 0 rgba(37, 99, 235, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--radchat-transition-base);
+  z-index: 2147483646 !important; /* High z-index ensures toggle button is always visible */
+  position: relative;
+  overflow: hidden;
+}
+
+.radchat-toggle-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  border-radius: inherit;
+}
+
+.radchat-toggle-button:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: var(--radchat-shadow-xl), 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.radchat-toggle-button:active {
+  transform: scale(1.02);
+}
+
+/* Pulse animation for attention */
+@keyframes radchat-pulse-ring {
+  0% {
+    box-shadow: var(--radchat-shadow-lg), 0 0 0 0 rgba(37, 99, 235, 0.5);
+  }
+  70% {
+    box-shadow: var(--radchat-shadow-lg), 0 0 0 12px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: var(--radchat-shadow-lg), 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+.radchat-toggle-button.pulse {
+  animation: radchat-pulse-ring 2s infinite;
+}
+
+.radchat-toggle-icon {
+  font-size: 26px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* ============================================
+   Rnd Container (Drag/Resize Wrapper)
+   ============================================ */
+.radchat-rnd-container {
+  z-index: 2147483645 !important; /* Ensure drag container is on top but below widget container */
+}
+
+/* ============================================
+   Main Chat Container
+   ============================================ */
+.radchat-container {
+  position: relative; /* Anchor for slide-out menu overlay */
+  width: 100%;
+  height: 100%;
+  background: var(--radchat-background-color); /* Solid background prevents content behind from showing through */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* border: 1px solid var(--radchat-border-color);
+  border-radius: var(--radchat-radius-xl); */
+  box-shadow: var(--radchat-shadow-2xl);
+  transition: box-shadow var(--radchat-transition-base);
+}
+
+.radchat-container:hover {
+  box-shadow: var(--radchat-shadow-2xl), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   Chat Header
+   ============================================ */
+.radchat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--radchat-space-2) var(--radchat-space-4);
+  background: linear-gradient(135deg, var(--radchat-primary-color) 0%, var(--radchat-primary-color-dark) 100%);
+  color: white;
+  font-weight: 600;
+  cursor: move;
+  user-select: none;
+  position: relative;
+  min-height: auto;
+}
+
+.radchat-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+}
+
+.radchat-header-buttons {
+  display: flex;
+  gap: var(--radchat-space-1);
+  align-items: center;
+}
+
+.radchat-new-chat-button,
+.radchat-close-button {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: var(--radchat-space-2);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radchat-radius-md);
+  transition: all var(--radchat-transition-fast);
+  backdrop-filter: blur(4px);
+}
+
+.radchat-new-chat-button:hover,
+.radchat-close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.radchat-new-chat-button:active,
+.radchat-close-button:active {
+  transform: scale(0.95);
+}
+
+/* New chat button is now icon-only, matches close button dimensions */
+
+.radchat-new-chat-button svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+}
+
+.radchat-close-button {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+/* ── Hamburger button ── */
+
+.radchat-hamburger-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: var(--radchat-space-2);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radchat-radius-md);
+  transition: all var(--radchat-transition-fast);
+  backdrop-filter: blur(4px);
+  margin-right: var(--radchat-space-2);
+  flex-shrink: 0;
+}
+
+.radchat-hamburger-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.radchat-hamburger-button:active {
+  transform: scale(0.95);
+}
+
+/* Animated hamburger → X icon */
+.radchat-hamburger-icon,
+.radchat-hamburger-icon::before,
+.radchat-hamburger-icon::after {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: white;
+  border-radius: 1px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.radchat-hamburger-icon::before,
+.radchat-hamburger-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 16px;
+}
+
+.radchat-hamburger-icon::before {
+  top: -5px;
+}
+
+.radchat-hamburger-icon::after {
+  top: 5px;
+}
+
+/* Animate to X when open */
+.radchat-hamburger-button.open .radchat-hamburger-icon {
+  background: transparent;
+}
+
+.radchat-hamburger-button.open .radchat-hamburger-icon::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.radchat-hamburger-button.open .radchat-hamburger-icon::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+/* ── Slide-out menu panel ── */
+
+.radchat-menu-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  animation: radchat-menu-fade-in 0.2s ease;
+}
+
+@keyframes radchat-menu-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.radchat-menu-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 220px;
+  max-width: 70%;
+  background: var(--radchat-background-color, #ffffff);
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  padding: 52px 0 var(--radchat-space-4) 0; /* top padding clears header */
+  border-right: 1px solid var(--radchat-border-color, #e2e8f0);
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.08);
+  animation: radchat-menu-slide-in 0.25s ease;
+  overflow-y: auto;
+}
+
+@keyframes radchat-menu-slide-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.radchat-menu-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--radchat-text-secondary, #64748b);
+  padding: var(--radchat-space-4) var(--radchat-space-4) var(--radchat-space-1) var(--radchat-space-4);
+}
+
+.radchat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--radchat-space-3);
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  background: none;
+  border: none;
+  color: var(--radchat-text-color, #1e293b);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--radchat-transition-fast);
+  width: 100%;
+  text-align: left;
+}
+
+.radchat-menu-item:hover {
+  background: var(--radchat-background-tertiary, #f1f5f9);
+}
+
+.radchat-menu-item.active {
+  color: var(--radchat-primary-color, #2563eb);
+  background: var(--radchat-primary-color-light, #dbeafe);
+}
+
+.radchat-menu-item svg {
+  flex-shrink: 0;
+}
+
+.radchat-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: var(--radchat-space-2);
+}
+
+.radchat-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: var(--radchat-radius-full);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+  animation: radchat-status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes radchat-status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ============================================
+   Widget Open/Close States
+   ============================================ */
+.radchat-widget.closed {
+  transition: opacity var(--radchat-transition-slow), transform var(--radchat-transition-slow);
+}
+
+.radchat-widget.open {
+  transition: opacity var(--radchat-transition-slow), transform var(--radchat-transition-slow);
+}
+
+/* ============================================
+   React Chatbot Kit Overrides
+   ============================================ */
+.react-chatbot-kit-chat-container {
+  width: 100% !important;
+  height: calc(100% - 52px) !important;
+  overflow: hidden !important;
+  background: var(--radchat-background-secondary);
+}
+
+.react-chatbot-kit-chat-inner-container {
+  height: 100% !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.react-chatbot-kit-chat-message-container {
+  height: calc(100% - 70px) !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--radchat-space-4);
+  scroll-behavior: smooth;
+  background: linear-gradient(180deg, var(--radchat-background-secondary) 0%, var(--radchat-background-color) 100%);
+}
+
+/* Custom Scrollbar */
+.react-chatbot-kit-chat-message-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.react-chatbot-kit-chat-message-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.react-chatbot-kit-chat-message-container::-webkit-scrollbar-thumb {
+  background: var(--radchat-border-color);
+  border-radius: var(--radchat-radius-full);
+}
+
+.react-chatbot-kit-chat-message-container::-webkit-scrollbar-thumb:hover {
+  background: var(--radchat-text-muted);
+}
+
+/* ============================================
+   Chat Input Area
+   ============================================ */
+.react-chatbot-kit-chat-input-container {
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  background: var(--radchat-background-color);
+  border-top: 1px solid var(--radchat-border-color-light);
+  /* Override react-chatbot-kit defaults */
+  width: auto;
+  position: static;
+  /* Stack attachment row above the form */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.react-chatbot-kit-chat-input-form {
+  display: flex;
+  gap: var(--radchat-space-2);
+  align-items: center;
+}
+
+/* Attachment picker — inline in the form row, only as wide as the button */
+.radchat-attachment-picker-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.react-chatbot-kit-chat-input {
+  flex: 1;
+  border: 1px solid var(--radchat-border-color);
+  border-radius: var(--radchat-radius-lg);
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--radchat-text-color);
+  background: var(--radchat-background-color);
+  transition: all var(--radchat-transition-fast);
+  outline: none;
+}
+
+.react-chatbot-kit-chat-input::placeholder {
+  color: var(--radchat-text-muted);
+}
+
+.react-chatbot-kit-chat-input:focus {
+  border-color: var(--radchat-primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.react-chatbot-kit-chat-btn-send {
+  background: linear-gradient(135deg, var(--radchat-primary-color) 0%, var(--radchat-primary-color-dark) 100%);
+  border: none;
+  border-radius: var(--radchat-radius-lg);
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  cursor: pointer;
+  transition: all var(--radchat-transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+}
+
+.react-chatbot-kit-chat-btn-send:hover {
+  transform: scale(1.02);
+  box-shadow: var(--radchat-shadow-md);
+}
+
+.react-chatbot-kit-chat-btn-send:active {
+  transform: scale(0.98);
+}
+
+.react-chatbot-kit-chat-btn-send svg {
+  fill: white;
+  width: 20px;
+  height: 20px;
+}
+
+/* ============================================
+   Bot Messages
+   ============================================ */
+.react-chatbot-kit-chat-bot-message-container {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--radchat-space-2);
+  margin-bottom: var(--radchat-space-3);
+}
+
+.react-chatbot-kit-chat-bot-avatar-container {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: var(--radchat-radius-full);
+  background: linear-gradient(135deg, var(--radchat-primary-color) 0%, var(--radchat-primary-color-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--radchat-shadow-sm);
+}
+
+.react-chatbot-kit-chat-bot-avatar-icon {
+  fill: white;
+  width: 18px;
+  height: 18px;
+}
+
+.react-chatbot-kit-chat-bot-avatar-letter {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.react-chatbot-kit-chat-bot-message {
+  background: var(--radchat-background-color);
+  color: var(--radchat-text-color);
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  border-radius: var(--radchat-radius-lg);
+  border-top-left-radius: var(--radchat-radius-sm);
+  margin-bottom: 0;
+  margin-left: 0; /* the kit's base styles right-align bot messages with margin-left: auto */
+  width: fit-content;
+  max-width: calc(100% - 48px);
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: var(--radchat-shadow-sm);
+  border: 1px solid var(--radchat-border-color-light);
+  animation: radchat-message-appear 0.3s ease-out;
+}
+
+@keyframes radchat-message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* User Messages */
+.react-chatbot-kit-user-chat-message-container {
+  display: flex;
+  justify-content: flex-end; /* Right-align user messages (chat UI convention) */
+  margin-bottom: var(--radchat-space-3);
+}
+
+.react-chatbot-kit-user-chat-message {
+  background: linear-gradient(135deg, var(--radchat-primary-color) 0%, var(--radchat-primary-color-dark) 100%);
+  color: white;
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  border-radius: var(--radchat-radius-lg);
+  border-top-right-radius: var(--radchat-radius-sm); /* Bubble tail on upper-right (user side) */
+  max-width: 85%;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: var(--radchat-shadow-sm);
+  animation: radchat-message-appear 0.3s ease-out;
+  position: relative; /* For the arrow pseudo-element */
+}
+
+/* Attachment tags shown on sent user messages */
+.radchat-user-msg-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.radchat-user-msg-attachment-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0.9;
+}
+
+.react-chatbot-kit-user-chat-message-arrow {
+  display: none; /* Arrow handled by border-radius bubble tail */
+}
+
+.react-chatbot-kit-user-avatar-container {
+  display: none;
+}
+
+/* ============================================
+   Loading State
+   ============================================ */
+.react-chatbot-kit-chat-bot-message.loading {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--radchat-space-4);
+}
+
+.react-chatbot-kit-chat-bot-message.loading::after {
+  content: '';
+  display: flex;
+}
+
+/* Typing indicator dots */
+@keyframes radchat-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--radchat-text-muted);
+  animation: radchat-typing-bounce 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: 0s; }
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ============================================
+   Resize Handles
+   ============================================ */
+.react-rnd-resizable-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity var(--radchat-transition-fast);
+  z-index: 2147483643 !important; /* Resize handles must be above container */
+}
+
+.radchat-container:hover .react-rnd-resizable-handle {
+  opacity: 1;
+}
+
+.radchat-resize-handle {
+  position: absolute;
+  z-index: 2147483643 !important; /* Resize handles must be above container */
+  background: transparent;
+  opacity: 0;
+  transition: opacity var(--radchat-transition-fast), background var(--radchat-transition-fast);
+}
+
+.radchat-container:hover .radchat-resize-handle {
+  opacity: 1;
+}
+
+.radchat-resize-handle:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+/* Side handles */
+.radchat-resize-handle-top,
+.radchat-resize-handle-bottom {
+  height: 8px;
+  width: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: var(--radchat-radius-full);
+}
+
+.radchat-resize-handle-left,
+.radchat-resize-handle-right {
+  width: 8px;
+  height: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: var(--radchat-radius-full);
+}
+
+.radchat-resize-handle-top {
+  top: 0;
+  cursor: n-resize;
+}
+
+.radchat-resize-handle-right {
+  right: 0;
+  cursor: e-resize;
+}
+
+.radchat-resize-handle-bottom {
+  bottom: 0;
+  cursor: s-resize;
+}
+
+.radchat-resize-handle-left {
+  left: 0;
+  cursor: w-resize;
+}
+
+/* Corner handles */
+.radchat-resize-handle-top-right,
+.radchat-resize-handle-bottom-right,
+.radchat-resize-handle-bottom-left,
+.radchat-resize-handle-top-left {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radchat-radius-sm);
+}
+
+.radchat-resize-handle-top-right {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+}
+
+.radchat-resize-handle-bottom-right {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+}
+
+.radchat-resize-handle-bottom-left {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+}
+
+.radchat-resize-handle-top-left {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+}
+
+/* ============================================
+   Network Offline Banner
+   ============================================ */
+.radchat-offline-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--radchat-space-2);
+  padding: var(--radchat-space-2) var(--radchat-space-3);
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-bottom: 1px solid #f59e0b;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.radchat-offline-icon {
+  font-size: 14px;
+}
+
+/* ============================================
+   Error Message Styles
+   ============================================ */
+.radchat-error-message {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  border-radius: var(--radchat-radius-md);
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--radchat-space-2);
+}
+
+.radchat-error-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ============================================
+   Link Styling in Messages
+   ============================================ */
+.react-chatbot-kit-chat-bot-message a {
+  color: var(--radchat-primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--radchat-transition-fast);
+}
+
+.react-chatbot-kit-chat-bot-message a:hover {
+  border-bottom-color: var(--radchat-primary-color);
+}
+
+/* ============================================
+   Code Blocks in Messages
+   ============================================ */
+.react-chatbot-kit-chat-bot-message code {
+  background: var(--radchat-background-tertiary);
+  padding: 2px 6px;
+  border-radius: var(--radchat-radius-sm);
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 13px;
+  color: var(--radchat-text-color);
+}
+
+.react-chatbot-kit-chat-bot-message pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: var(--radchat-space-3);
+  border-radius: var(--radchat-radius-md);
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.react-chatbot-kit-chat-bot-message pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* ============================================
+   Block Renderer - Hide Empty Message Container
+   ============================================ */
+/* When using blockRenderer widget, the message text is empty.
+   Hide the empty container to avoid showing an empty box.
+   The BlockRenderer component handles all content rendering. */
+.react-chatbot-kit-chat-bot-message:has(.radchat-blocks) {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+/* Remove the nested empty container inside blockRenderer messages */
+.react-chatbot-kit-chat-bot-message .react-chatbot-kit-chat-bot-message-container:empty {
+  display: none;
+}
+
+/* Tighten spacing for text inside bot messages and text blocks */
+.react-chatbot-kit-chat-bot-message p,
+.radchat-block-text p {
+  margin: 0 0 6px 0;
+}
+
+.react-chatbot-kit-chat-bot-message p:last-child,
+.radchat-block-text p:last-child {
+  margin-bottom: 0;
+}
+
+.react-chatbot-kit-chat-bot-message ul,
+.react-chatbot-kit-chat-bot-message ol,
+.radchat-block-text ul,
+.radchat-block-text ol {
+  margin: 4px 0 6px 0;
+  padding-left: 20px;
+}
+
+.react-chatbot-kit-chat-bot-message li,
+.radchat-block-text li {
+  margin-bottom: 2px;
+}
+
+.react-chatbot-kit-chat-bot-message h4,
+.react-chatbot-kit-chat-bot-message h3,
+.radchat-block-text h4,
+.radchat-block-text h3 {
+  margin: 8px 0 4px 0;
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 480px) {
+  .radchat-toggle-button {
+    width: 54px;
+    height: 54px;
+  }
+
+  .radchat-toggle-icon {
+    font-size: 24px;
+  }
+
+  .react-chatbot-kit-chat-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* ============================================
+   Slash Command Autocomplete
+   ============================================ */
+.radchat-slash-autocomplete {
+  position: absolute;
+  bottom: 56px;
+  left: 8px;
+  right: 8px;
+  background: var(--radchat-background-color, #fff);
+  border: 1px solid var(--radchat-border-color, #e2e8f0);
+  border-radius: var(--radchat-radius-lg, 12px);
+  box-shadow: var(--radchat-shadow-lg);
+  padding: 4px;
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.radchat-slash-autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radchat-radius-md, 8px);
+  cursor: pointer;
+  text-align: left;
+  transition: background 80ms ease;
+}
+
+.radchat-slash-autocomplete-item.selected,
+.radchat-slash-autocomplete-item:hover {
+  background: var(--radchat-primary-color-light, #dbeafe);
+}
+
+.radchat-slash-autocomplete-cmd {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--radchat-primary-color, #2563eb);
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.radchat-slash-autocomplete-desc {
+  font-size: 12px;
+  color: var(--radchat-text-secondary, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================
+   Sidebar Layout Mode
+   ============================================ */
+.radchat-layout-sidebar {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: 0 !important;
+  width: 400px; /* Fallback; inline style controls width when resizing */
+  min-width: 300px; /* Minimum usable width - matches dimensions.minWidth */
+  /* max-width removed — users can resize sidebar to any width up to viewport edge */
+  height: 100vh !important;
+  height: 100dvh !important; /* Use dynamic viewport height to account for mobile browsers */
+  max-height: none !important;
+  border-radius: 0 !important;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1) !important;
+  z-index: 10000 !important; /* Above typical host page headers (z-index 1000-2000) but below floating mode */
+  background: var(--radchat-background-color) !important; /* Ensure opaque background */
+}
+
+/* Disable drag cursor on header in sidebar mode */
+.radchat-layout-sidebar .radchat-header {
+  cursor: default;
+}
+
+/* Hide resize handles in sidebar — only allow horizontal left-edge resize */
+.radchat-layout-sidebar .radchat-resize-handle {
+  display: none;
+}
+
+.radchat-layout-sidebar .radchat-resize-handle-left {
+  display: block;
+  height: 100%;
+  top: 0;
+  transform: none;
+  opacity: 1;
+}
+
+/* Comfortable input area in sidebar mode */
+.radchat-layout-sidebar .react-chatbot-kit-chat-input-container {
+  padding: var(--radchat-space-4) var(--radchat-space-4);
+}
+
+.radchat-layout-sidebar .react-chatbot-kit-chat-input {
+  padding: var(--radchat-space-3) var(--radchat-space-4);
+  font-size: 15px;
+  min-height: 48px;
+}
+
+.radchat-layout-sidebar .react-chatbot-kit-chat-btn-send {
+  min-width: 48px;
+  height: 48px;
+}
+
+/* ============================================
+   Fullscreen Layout Mode
+   ============================================ */
+.radchat-layout-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  width: 100dvw !important; /* Use dynamic viewport width for mobile browsers */
+  height: 100vh !important;
+  height: 100dvh !important; /* Use dynamic viewport height to account for mobile address bar */
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  z-index: 10000 !important; /* Above typical host page headers (z-index 1000-2000) but below floating mode */
+  background: var(--radchat-background-color) !important; /* Ensure opaque background */
+}
+
+/* Remove internal radchat-container nesting border radius in fullscreen */
+.radchat-layout-fullscreen > .radchat-container {
+  border-radius: 0;
+}
+
+/* No drag or resize in fullscreen */
+.radchat-layout-fullscreen .radchat-header {
+  cursor: default;
+}
+
+.radchat-layout-fullscreen .radchat-resize-handle {
+  display: none;
+}
+
+/* Message area in fullscreen — no max-width, content uses full viewport width */
+.radchat-layout-fullscreen .react-chatbot-kit-chat-message-container {
+  /* max-width removed — messages expand to full container width */
+  padding: var(--radchat-space-6);
+}
+
+/* Input area in fullscreen — no max-width, expands to full width */
+.radchat-layout-fullscreen .react-chatbot-kit-chat-input-container {
+  /* max-width and width: 80vw removed — input uses full container width */
+  padding: var(--radchat-space-5) var(--radchat-space-6); /* Larger padding for fullscreen */
+}
+
+
+
+/* ============================================
+   Responsive: collapse sidebar to fullscreen on narrow screens
+   ============================================ */
+@media (max-width: 520px) {
+  .radchat-layout-sidebar {
+    width: 100vw !important;
+    min-width: 100vw !important;
+  }
+}
+
+/* ============================================
+   Chat body: messages, input and overlays
+   ============================================ */
+.radchat-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.radchat-body > div:first-child {
+  flex: 1;
+  min-height: 0;
+}
+
+.radchat-body .react-chatbot-kit-chat-container {
+  height: 100% !important;
+}
+
+.radchat-body .react-chatbot-kit-chat-message-container {
+  flex: 1;
+  min-height: 0;
+  height: auto !important;
+}
+
+.radchat-history-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+}
+
+/* Answers made of blocks use the full message width (tables and charts). */
+.react-chatbot-kit-chat-bot-message.radchat-blocks-message {
+  width: calc(100% - 48px);
+}
+
+/* Hide the closed window while keeping its conversation mounted. */
+.radchat-container[hidden] {
+  display: none !important;
+}
+
+/* No text selection while dragging or resizing. */
+.radchat-is-busy,
+.radchat-is-busy * {
+  user-select: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radchat-widget *,
+  .radchat-widget *::before,
+  .radchat-widget *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

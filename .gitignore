@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+demo-dist/
+*.tsbuildinfo
+*.tgz
+
+# Test / coverage
+coverage/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Local environment
+.env
+.env.local
+*.local

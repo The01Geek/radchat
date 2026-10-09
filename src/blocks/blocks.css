@@ -1,0 +1,55 @@
+/* Block renderer: chart placeholder, block error, and the Sources list. */
+
+.radchat-blocks {
+  width: 100%;
+  min-width: 0;
+}
+
+.radchat-block-chart {
+  width: 100%;
+  margin-bottom: 8px;
+  background: var(--radchat-background-color, #ffffff);
+  border: 1px solid var(--radchat-border-color, #e2e8f0);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.radchat-block-chart-loading,
+.radchat-block-error {
+  font-size: 12px;
+  color: var(--radchat-text-secondary, #64748b);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: var(--radchat-background-secondary, #f8fafc);
+}
+
+.radchat-block-error {
+  color: var(--radchat-error-text, #991b1b);
+  background: var(--radchat-error-bg, #fef2f2);
+}
+
+.radchat-sources {
+  font-size: 12px;
+  color: var(--radchat-text-secondary, #64748b);
+  margin: 4px 0 8px;
+}
+
+.radchat-sources-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.radchat-sources ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.radchat-sources a {
+  color: var(--radchat-primary-color, #2563eb);
+  text-decoration: none;
+}
+
+.radchat-sources a:hover {
+  text-decoration: underline;
+}
