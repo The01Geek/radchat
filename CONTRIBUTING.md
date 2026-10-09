@@ -11,7 +11,7 @@ npm install
 npm run demo
 ```
 
-Use Node.js 20.19 or newer (`.nvmrc` pins 22). Keep `package-lock.json` in sync with `package.json`; use npm.
+Use Node.js 22.12 or newer (`.nvmrc` pins 22). Keep `package-lock.json` in sync with `package.json`; use npm.
 
 ## Workflow
 
