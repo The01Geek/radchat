@@ -233,10 +233,18 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
     });
   }, [dimensions]);
 
-  // Keep the window on screen when the browser is resized.
+  // Keep the window on screen when the browser is resized. The visual
+  // viewport matters separately: the on-screen keyboard and a mobile URL bar
+  // change only it, and mobile viewports can settle to their final size after
+  // the window's resize event fired (emulated ones never fire a second one).
   useEffect(() => {
     window.addEventListener('resize', keepInsideViewport);
-    return () => window.removeEventListener('resize', keepInsideViewport);
+    const vv = typeof visualViewport === 'undefined' ? null : visualViewport;
+    vv?.addEventListener('resize', keepInsideViewport);
+    return () => {
+      window.removeEventListener('resize', keepInsideViewport);
+      vv?.removeEventListener('resize', keepInsideViewport);
+    };
   }, [keepInsideViewport]);
 
   // The viewport at first render can differ from the one at open time — mobile

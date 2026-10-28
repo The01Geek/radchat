@@ -82,6 +82,31 @@ describe('ChatWidget', () => {
     Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
   });
 
+  it('re-clamps when only the visual viewport resizes', () => {
+    localStorage.removeItem('vv-clamp-test:geometry');
+    // jsdom has no visual viewport; the widget treats a missing one as absent.
+    const vv = new EventTarget();
+    Object.defineProperty(window, 'visualViewport', { value: vv, configurable: true });
+    try {
+      const ref = createRef<ChatWidgetHandle>();
+      const { container } = render(
+        <ChatWidget ref={ref} hideBubble storageKey="vv-clamp-test" dataSource={createMockDataSource({ latencyMs: 0 })} />,
+      );
+      const float = () => container.querySelector<HTMLElement>('[role="dialog"]')!;
+      act(() => ref.current!.open());
+      expect(parseFloat(float().style.left)).toBeGreaterThan(0);
+
+      // The on-screen keyboard or a late-settling mobile viewport: no window
+      // resize event, only the visual viewport reports the narrower size.
+      Object.defineProperty(window, 'innerWidth', { value: 390, configurable: true });
+      act(() => vv.dispatchEvent(new Event('resize')));
+      expect(float().style.left).toBe('40px'); // fully on screen: 390 − 350 wide
+      Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+    } finally {
+      Reflect.deleteProperty(window, 'visualViewport');
+    }
+  });
+
   it('sends a question and renders a table answer from the data source', async () => {
     renderWidget();
     await send('What are the top products?');
