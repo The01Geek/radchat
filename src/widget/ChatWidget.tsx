@@ -23,11 +23,17 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import Chatbot from 'react-chatbot-kit';
+import chatbotKit from 'react-chatbot-kit';
 import 'react-chatbot-kit/build/main.css';
 import './chat.css';
 
 import type { Block, ChatWidgetHandle, ChatWidgetOptions, LayoutMode, OpenOptions } from '../types';
+
+// Depending on the consumer's interop, the kit's default export is either the
+// Chatbot class (webpack/babel) or the whole CJS namespace object (Vite and
+// Node ESM, which map `default` to module.exports — a webpack build whose
+// exports sit behind getters the named-export lexer can't see). Unwrap both.
+const Chatbot = ((chatbotKit as { Chatbot?: typeof chatbotKit }).Chatbot ?? chatbotKit);
 import {
   answerToMessages,
   ChatController,
