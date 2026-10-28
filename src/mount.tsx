@@ -6,7 +6,7 @@
 import { createRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChatWidget } from './widget/ChatWidget';
-import type { ChatWidgetHandle, ChatWidgetOptions, LayoutMode, OpenOptions } from './types';
+import type { Block, ChatWidgetHandle, ChatWidgetOptions, LayoutMode, OpenOptions } from './types';
 
 export interface MountedChatWidget extends ChatWidgetHandle {
   /** Re-render with new options (merged over the current ones). */
@@ -53,6 +53,7 @@ export function mount(element: Element, options: ChatWidgetOptions): MountedChat
     isOpen: () => ref.current?.isOpen() ?? false,
     newConversation: () => withHandle((h) => h.newConversation()),
     setLayout: (layout: LayoutMode) => withHandle((h) => h.setLayout(layout)),
+    appendBlocks: (blocks: Block[]) => withHandle((h) => h.appendBlocks(blocks)),
     update(next) {
       current = { ...current, ...next };
       render();
