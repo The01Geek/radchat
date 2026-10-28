@@ -95,6 +95,9 @@ describe('ChatWidget', () => {
       const float = () => container.querySelector<HTMLElement>('[role="dialog"]')!;
       act(() => ref.current!.open());
       expect(parseFloat(float().style.left)).toBeGreaterThan(0);
+      // A window from a larger screen must shrink with the viewport — in CSS,
+      // so it fits even when no resize event fires.
+      expect(float().style.maxWidth).toBe('100%');
 
       // The on-screen keyboard or a late-settling mobile viewport: no window
       // resize event, only the visual viewport reports the narrower size.

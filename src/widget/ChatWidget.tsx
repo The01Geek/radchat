@@ -530,7 +530,11 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
           overflow: 'hidden',
           minWidth: `${dimensions.minWidth}px`,
           minHeight: `${dimensions.minHeight}px`,
-          maxHeight: `${dimensions.maxHeight}px`,
+          // A window remembered from a larger screen must never outgrow the
+          // viewport; percentages (the fixed containing block is the viewport)
+          // keep it fitted even when no resize event ever arrives.
+          maxWidth: '100%',
+          maxHeight: `min(${dimensions.maxHeight}px, 100%)`,
         }
       : layoutMode === 'sidebar'
         ? { width: `${dimensions.width}px` }
