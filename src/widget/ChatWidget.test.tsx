@@ -58,6 +58,30 @@ describe('ChatWidget', () => {
     expect(ref.current!.isOpen()).toBe(false);
   });
 
+  it('re-clamps the floating window into the viewport when it opens', () => {
+    localStorage.removeItem('clamp-test:geometry');
+    const ref = createRef<ChatWidgetHandle>();
+    const { container } = render(
+      <ChatWidget ref={ref} hideBubble storageKey="clamp-test" dataSource={createMockDataSource({ latencyMs: 0 })} />,
+    );
+    const float = () => container.querySelector<HTMLElement>('[role="dialog"]')!;
+    // jsdom's 1024×768 viewport: the default bottom-right spot fits fine.
+    act(() => ref.current!.open());
+    expect(parseFloat(float().style.left)).toBeGreaterThan(0);
+    act(() => ref.current!.close());
+
+    // Then the viewport shrinks without a resize event — mobile emulation
+    // settles the layout viewport late, and a restored geometry may come from
+    // a larger window. Opening must not leave the window offscreen.
+    Object.defineProperty(window, 'innerWidth', { value: 390, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 844, configurable: true });
+    act(() => ref.current!.open());
+    expect(float().style.left).toBe('40px'); // fully on screen: 390 − 350 wide
+    expect(parseFloat(float().style.top)).toBeLessThanOrEqual(344); // 844 − 500 tall
+    Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
+  });
+
   it('sends a question and renders a table answer from the data source', async () => {
     renderWidget();
     await send('What are the top products?');

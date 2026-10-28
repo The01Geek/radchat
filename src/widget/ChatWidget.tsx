@@ -224,18 +224,28 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
     storage.setJSON('geometry', { position, dimensions: { width: dimensions.width, height: dimensions.height } });
   }, [storage, position, dimensions.width, dimensions.height, isDragging, isResizing]);
 
+  // Keep the window inside the live viewport.
+  const keepInsideViewport = useCallback(() => {
+    setDimensions((prev) => (prev.maxWidth === window.innerWidth ? prev : { ...prev, maxWidth: window.innerWidth }));
+    setPosition((prev) => {
+      const next = clampPosition(prev, dimensions);
+      return next.x === prev.x && next.y === prev.y ? prev : next;
+    });
+  }, [dimensions]);
+
   // Keep the window on screen when the browser is resized.
   useEffect(() => {
-    const handleWindowResize = () => {
-      setDimensions((prev) => (prev.maxWidth === window.innerWidth ? prev : { ...prev, maxWidth: window.innerWidth }));
-      setPosition((prev) => {
-        const next = clampPosition(prev, dimensions);
-        return next.x === prev.x && next.y === prev.y ? prev : next;
-      });
-    };
-    window.addEventListener('resize', handleWindowResize);
-    return () => window.removeEventListener('resize', handleWindowResize);
-  }, [dimensions]);
+    window.addEventListener('resize', keepInsideViewport);
+    return () => window.removeEventListener('resize', keepInsideViewport);
+  }, [keepInsideViewport]);
+
+  // The viewport at first render can differ from the one at open time — mobile
+  // emulation settles the layout viewport late, and a restored geometry may
+  // come from a larger window — and settling does not always fire a resize.
+  // Re-clamp each time the window opens so it never appears offscreen.
+  useEffect(() => {
+    if (isOpen) keepInsideViewport();
+  }, [isOpen, keepInsideViewport]);
 
   const handleHeaderMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (layoutMode !== 'floating' || e.button !== 0) return;
