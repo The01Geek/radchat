@@ -316,6 +316,11 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
       if (id) storage.set('conversation', id);
       else storage.remove('conversation');
     },
+    onTurnFailed: (failedText) => {
+      const input = rootRef.current?.querySelector<HTMLInputElement>('.react-chatbot-kit-chat-input');
+      // Only refill when the composer is still empty — never overwrite typing.
+      if (input && !input.value) setChatInputValue(input, failedText);
+    },
   };
   useLayoutEffect(() => {
     hostRef.current = hostValue;

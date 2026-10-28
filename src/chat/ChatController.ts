@@ -74,6 +74,8 @@ export interface ControllerHost {
   onOpenHistory: () => boolean;
   /** The conversation ID changed (new ID from the backend, or reset to null). */
   onConversationIdChange: (id: string | null) => void;
+  /** A turn failed; the widget refills the composer so the text can be resent. */
+  onTurnFailed?: (text: string) => void;
 }
 
 let idCounter = 0;
@@ -377,22 +379,27 @@ export class ChatController {
       if (response?.conversationId) this.setConversationId(response.conversationId);
 
       const messages = answerToMessages(response?.blocks ?? [], response?.sources);
+      // An explicitly empty blocks array is a silent update: the host refreshed
+      // state outside the transcript, so no apology replaces the indicator. A
+      // missing blocks array stays a missing answer and still explains itself.
+      const silent = messages.length === 0 && Array.isArray(response?.blocks);
       this.update((prev) => [
         ...prev.filter((m) => !isTypingIndicator(m)),
-        ...(messages.length > 0 ? messages : [botMessage(DEFAULT_EMPTY_ANSWER)]),
+        ...(silent ? [] : messages.length > 0 ? messages : [botMessage(DEFAULT_EMPTY_ANSWER)]),
       ]);
     } catch (error) {
       if (abort.signal.aborted || generation !== this.generation || this.disposed) return;
       console.error('[RadChat] sendMessage failed:', error);
-      let text: string;
+      host.onTurnFailed?.(text);
+      let errorText: string;
       try {
-        text = host.formatError(error);
+        errorText = host.formatError(error);
       } catch {
-        text = defaultFormatError(error);
+        errorText = defaultFormatError(error);
       }
       this.update((prev) => [
         ...prev.filter((m) => !isTypingIndicator(m)),
-        botMessage(text),
+        botMessage(errorText),
       ]);
     } finally {
       this.inFlight.delete(abort);
