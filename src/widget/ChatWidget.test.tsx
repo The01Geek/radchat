@@ -282,4 +282,66 @@ describe('ChatWidget', () => {
     expect(await within(dialogB).findByText('from B')).toBeInTheDocument();
     expect(within(screen.getByRole('dialog', { name: 'A' })).queryByText('from B')).not.toBeInTheDocument();
   });
+
+  describe('appendBlocks', () => {
+    it('buffers appends made before the first open and shows them on open', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} hideBubble initialOpen={false} dataSource={createMockDataSource({ latencyMs: 0 })} />);
+
+      act(() => ref.current!.appendBlocks([{ type: 'text', content: 'buffered card' }, { type: 'text', content: 'second card' }]));
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+      act(() => ref.current!.open());
+      expect(screen.getByText('buffered card')).toBeInTheDocument();
+      expect(screen.getByText('second card')).toBeInTheDocument();
+    });
+
+    it('appends to the live transcript while the widget is open', async () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} initialOpen dataSource={createMockDataSource({ latencyMs: 0 })} />);
+      await screen.findByText(/type/i);
+
+      act(() => ref.current!.appendBlocks([{ type: 'text', content: 'live card' }]));
+
+      expect(screen.getByText('live card')).toBeInTheDocument();
+      // The transcript still works after a live append.
+      await send('hello');
+      expect(await screen.findByText(/SELECT/i)).toBeInTheDocument();
+    });
+
+    it('routes custom block types through blockRenderers', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(
+        <ChatWidget
+          ref={ref}
+          initialOpen
+          dataSource={createMockDataSource({ latencyMs: 0 })}
+          blockRenderers={{ 'raddy-card': (block) => <div data-testid="card">card {String(block.cardId)}</div> }}
+        />,
+      );
+
+      act(() => ref.current!.appendBlocks([{ type: 'raddy-card', cardId: 'abc' }]));
+
+      expect(screen.getByTestId('card')).toHaveTextContent('card abc');
+    });
+
+    it('ignores an empty append', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} initialOpen dataSource={createMockDataSource({ latencyMs: 0 })} />);
+
+      expect(() => act(() => ref.current!.appendBlocks([]))).not.toThrow();
+    });
+
+    it('drops buffered blocks on a new conversation', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} initialOpen dataSource={createMockDataSource({ latencyMs: 0 })} />);
+
+      act(() => {
+        ref.current!.appendBlocks([{ type: 'text', content: 'to be dropped' }]);
+        ref.current!.newConversation();
+      });
+
+      expect(screen.queryByText('to be dropped')).not.toBeInTheDocument();
+    });
+  });
 });

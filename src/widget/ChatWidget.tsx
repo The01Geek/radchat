@@ -27,8 +27,9 @@ import Chatbot from 'react-chatbot-kit';
 import 'react-chatbot-kit/build/main.css';
 import './chat.css';
 
-import type { ChatWidgetHandle, ChatWidgetOptions, LayoutMode, OpenOptions } from '../types';
+import type { Block, ChatWidgetHandle, ChatWidgetOptions, LayoutMode, OpenOptions } from '../types';
 import {
+  answerToMessages,
   ChatController,
   botMessage,
   createKitAdapters,
@@ -421,6 +422,23 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
     isOpenRef.current = isOpen;
   });
 
+  const hasOpenedRef = useRef(hasOpened);
+  useLayoutEffect(() => {
+    hasOpenedRef.current = hasOpened;
+  });
+
+
+  const appendBlocks = useCallback(
+    (blocks: Block[]) => {
+      if (!blocks.length) return;
+      // Before the first open the Chatbot is not mounted and the controller is
+      // not bound; buffering into initialMessages seeds the transcript at mount.
+      if (hasOpenedRef.current) controller.addMessages(...answerToMessages(blocks));
+      else setInitialMessages((prev) => [...prev, ...answerToMessages(blocks)]);
+    },
+    [controller],
+  );
+
   const open = useCallback(
     (options: OpenOptions = {}) => {
       if (options.startNewConversation) controller.newConversation();
@@ -441,8 +459,9 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
       isOpen: () => isOpenRef.current,
       newConversation: () => controller.newConversation(),
       setLayout: changeLayout,
+      appendBlocks,
     }),
-    [open, setOpen, controller, changeLayout],
+    [open, setOpen, controller, changeLayout, appendBlocks],
   );
 
   // ---- rendering ----------------------------------------------------------------
