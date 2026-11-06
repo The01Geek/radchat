@@ -1,0 +1,613 @@
+{
+  "iter": 5,
+  "loop_role": "fix",
+  "dispatch_mode": "fanned-out",
+  "dispatch_disposition": null,
+  "fix_commit_sha": "ccd1e87512f6ad1220d96b19da059afe2bf72dbb",
+  "fix_decisions": [
+    {
+      "finding_id": "F-1",
+      "decision": "applied",
+      "commit": "ccd1e87512f6ad1220d96b19da059afe2bf72dbb",
+      "evidence": "performTurn: only a rejected sendMessage reaches failTurn (error text, onTurnFailed, re-stage); answer-processing errors log 'Could not show the answer' and show UNDISPLAYABLE_ANSWER with no refill; test with a null source (RED at 30438b6)."
+    },
+    {
+      "finding_id": "F-2",
+      "decision": "applied",
+      "commit": "ccd1e87512f6ad1220d96b19da059afe2bf72dbb",
+      "evidence": "BlockRenderer warns when an own blockRenderers entry is not a function, covering sendMessage, getConversation, replyBlocks and appendBlocks blocks; test (RED at 30438b6)."
+    },
+    {
+      "finding_id": "F-3",
+      "decision": "applied",
+      "commit": "ccd1e87512f6ad1220d96b19da059afe2bf72dbb",
+      "evidence": "src/widget/ChatWidget.interop.test.tsx mocks the kit default as { Chatbot } and renders the widget; mutating the call site to a plain default import fails it."
+    },
+    {
+      "finding_id": "D-1",
+      "decision": "applied",
+      "commit": "8294a56c486a2812a3db2d640d32aebfd943012c",
+      "original_severity": "minor",
+      "source_file": "src/chat/ChatController.test.ts",
+      "claim_text": "The cannot-show-answer test depends on a sources: [null] crash rather than the behavior it names.",
+      "evidence": "Error now comes from a throwing onConversationIdChange host callback."
+    },
+    {
+      "finding_id": "D-2",
+      "decision": "applied",
+      "commit": "8294a56c486a2812a3db2d640d32aebfd943012c",
+      "original_severity": "minor",
+      "source_file": "src/blocks/BlockRenderer.tsx",
+      "claim_text": "The non-function renderer warning repeats on every render.",
+      "evidence": "Warns once per renderers object and type (WeakMap); test re-renders and expects one warning."
+    },
+    {
+      "finding_id": "D-3",
+      "decision": "applied",
+      "commit": "2433c9fbf56f46eb263f18b03c9475cf000a8493",
+      "original_severity": "minor",
+      "source_file": "src/chat/ChatController.ts",
+      "claim_text": "The answer-handling catch skips the stale-turn guard, so a host callback that starts a new conversation then throws adds a notice to the new conversation.",
+      "evidence": "Stale check added before the notice; test (RED at 8294a56)."
+    },
+    {
+      "finding_id": "D-4",
+      "decision": "applied",
+      "commit": "2433c9fbf56f46eb263f18b03c9475cf000a8493",
+      "original_severity": "suggestion",
+      "source_file": "src/blocks/BlockRenderer.tsx",
+      "claim_text": "A primitive blockRenderers plus a block typed length or an index reaches WeakMap.set and throws outside the per-block boundary.",
+      "evidence": "Warning lookup requires an object blockRenderers; test (RED at 8294a56)."
+    },
+    {
+      "finding_id": "D-5",
+      "decision": "pushed_back",
+      "skip_category": "uncategorized",
+      "original_severity": "suggestion",
+      "source_file": "src/chat/ChatController.test.ts",
+      "claim_text": "The stale-turn test asserts only the absence of the notice; it never checks that Could not show the answer was logged, so it passes if the throwing callback path is skipped.",
+      "evidence": "Inner re-fix cap (2) spent with this open at the iteration cap. Fix: assert console.error was called with Could not show the answer and the host error."
+    }
+  ],
+  "telemetry": {
+    "phase_1": {
+      "calls": 1,
+      "tokens": 204978,
+      "wall_clock_s": 647
+    }
+  },
+  "verification_evidence": {
+    "suite": "npm run check: exit 0; lint 0 errors (18 warnings in .prflow/tmp engine view copies only); typecheck ok; vitest 16 files, 211 passed, none skipped; builds ok",
+    "red_check": "F-1 and F-2 tests failed against 30438b6; interop test failed under a call-site mutation in a disposable worktree"
+  },
+  "phase3_failed_agents": [],
+  "diff_produced_at_head": "30438b6309b1533eeb0407aaae1f728b820ae575",
+  "iteration_head": "2433c9fbf56f46eb263f18b03c9475cf000a8493",
+  "reference_reads": {
+    "fix_delta": {
+      "status": "verified",
+      "outcome": "pushed_back",
+      "reason": null
+    }
+  },
+  "phase3_findings": [
+    {
+      "finding_id": "F-1",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "critical",
+      "description": "The try block in performTurn (ChatController.ts 394-440) covers processing of a successful answer (setConversationId 403, answerToMessages 406, update 411-414), not only sendMessage, and its catch treats every error as a failed turn: it logs '[RadChat] sendMessage failed:', shows the error bubble and, new in this diff, for a typed turn calls onTurnFailed, which refills the composer and re-stages attachments although the backend answered, inviting a duplicate send. Reachable errors: sourcesToMarkdown reading s.title on a null source (116), escapeMd on a non-string title (109), a non-array sources value with a length (115), or host.onConversationIdChange throwing. The broad try predates the PR; the diff gave its catch a 'retry this turn' meaning.",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          394,
+          440
+        ],
+        "kind": "unhandled_exception"
+      },
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-2",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "suggestion",
+      "description": "customRendererFor (blockGuards.ts 158-165, used at BlockRenderer.tsx 110-113) returns undefined for an own blockRenderers entry that is not a function, so BlockRenderer renders null with no log for blocks from sendMessage, getConversation or a command's replyBlocks; only appendBlocks warns (ChatWidget.tsx 531). Before this diff the same misconfiguration threw.",
+      "defect_signature": {
+        "file": "src/blocks/blockGuards.ts",
+        "line_range": [
+          158,
+          165
+        ],
+        "kind": "other"
+      },
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-3",
+      "agent": "prflow:pr-test-analyzer",
+      "severity": "suggestion",
+      "description": "No test covers the unwrapChatbot(chatbotKit) call at ChatWidget.tsx 54: under vitest the default import is already the component, so restoring a plain default import of react-chatbot-kit would still pass every test; kitInterop.test.ts tests unwrapChatbot only in isolation and nothing imports the built package under Node ESM.",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          54,
+          54
+        ],
+        "kind": "test_gap"
+      },
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    }
+  ],
+  "diff_profile": {
+    "small_diff": false,
+    "config_only": false,
+    "has_new_types": false,
+    "test_relevant": true,
+    "detect_all_audit": false,
+    "file_count": 15,
+    "changed_lines": 1006,
+    "checklist_skipped": null
+  },
+  "phase3_dispatched": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "expected_reviewers": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "cap_drops": {
+    "count": 0,
+    "by_category": {}
+  },
+  "checklist": [
+    {
+      "id": "VC-1",
+      "claim_signature": "api_contract:README.md:buffered-before-first-open:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-2",
+      "claim_signature": "api_contract:README.md:kept-across-restore:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-3",
+      "claim_signature": "api_contract:README.md:dropped-on-new-or-switch:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-4",
+      "claim_signature": "api_contract:README.md:widget-only-lost-on-reload:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-5",
+      "claim_signature": "api_contract:README.md:assistant-message-no-user-turn:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-6",
+      "claim_signature": "api_contract:types.ts:buffered-before-first-open:305",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-7",
+      "claim_signature": "api_contract:types.ts:kept-across-restore:306",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-8",
+      "claim_signature": "api_contract:types.ts:dropped-on-new-or-switch:307",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-9",
+      "claim_signature": "api_contract:types.ts:widget-only-lost-on-reload:308",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-10",
+      "claim_signature": "api_contract:README.md:typed-refill-empty-input:120",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-11",
+      "claim_signature": "api_contract:README.md:refill-restores-attachments:120",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-12",
+      "claim_signature": "api_contract:README.md:empty-blocks-silent:120",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-13",
+      "claim_signature": "data_format_assumption:ChatController.ts:missing-vs-empty-blocks:405",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-14",
+      "claim_signature": "data_format_assumption:types.ts:empty-blocks-silent:111",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-15",
+      "claim_signature": "api_contract:ChatController.ts:onturnfailed-return-contract:77",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-16",
+      "claim_signature": "api_contract:ChatController.ts:host-command-not-typed:267",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-17",
+      "claim_signature": "test_mock_alignment:ChatController.test.ts:host-started-command-model:203",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-18",
+      "claim_signature": "dependency_interaction:ChatController.ts:kit-parse-is-typed-input:254",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-19",
+      "claim_signature": "api_contract:ChatController.ts:refill-text-trimming:259",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-20",
+      "claim_signature": "api_contract:ChatController.ts:typed-handed-back-on-failure:358",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-21",
+      "claim_signature": "absolute_claim:ChatController.ts:throwing-listener-cannot-stop-rest:237",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-22",
+      "claim_signature": "api_contract:ChatController.ts:shared-staged-array:241",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-23",
+      "claim_signature": "api_contract:AttachmentPicker.tsx:chips-follow-controller:90",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-24",
+      "claim_signature": "api_contract:ChatController.ts:chips-follow-controller:222",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-25",
+      "claim_signature": "api_contract:ChatController.ts:new-staged-files-detected:436",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-26",
+      "claim_signature": "api_contract:blockGuards.ts:module-header-usage:1",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-27",
+      "claim_signature": "api_contract:blockGuards.ts:own-function-only:10",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-28",
+      "claim_signature": "api_contract:blockGuards.ts:malformed-doc-builtins-skip:21",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-29",
+      "claim_signature": "absolute_claim:BlockRenderer.test.tsx:prototype-names-never-renderers:67",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-30",
+      "claim_signature": "dependency_interaction:mount.tsx:replay-timeout-nominal:49",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-31",
+      "claim_signature": "api_contract:mount.tsx:handle-call-order:43",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-32",
+      "claim_signature": "absolute_claim:mount.tsx:thrown-widget-never-attaches:52",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-33",
+      "claim_signature": "dependency_interaction:mount.tsx:update-after-unmount:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-34",
+      "claim_signature": "test_mock_alignment:mount.test.tsx:react-outside-fake-timers:42",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-35",
+      "claim_signature": "test_mock_alignment:mount.test.tsx:not-delivered-synchronously:29",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-36",
+      "claim_signature": "dependency_interaction:kitInterop.ts:kit-default-chatbot-unwrap:8",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-37",
+      "claim_signature": "absolute_claim:kitInterop.ts:node-esm-no-named-exports:5",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-38",
+      "claim_signature": "dependency_interaction:kitInterop.ts:kit-ships-commonjs:2",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-39",
+      "claim_signature": "test_mock_alignment:kitInterop.test.ts:kit-namespace-mock-shape:12",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-40",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:wellformed-type-is-string:518",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-41",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:builtin-types-match-renderer:527",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-42",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:controller-bound-at-mount:542",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-43",
+      "claim_signature": "api_contract:ChatWidget.tsx:onturnfailed-host-contract:342",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-44",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:refill-never-overwrites-typing:344",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-45",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:restore-loses-to-activity:384",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-46",
+      "claim_signature": "api_contract:ChatWidget.tsx:loadconversation-restore-doc:362",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-47",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:css-min-beats-max:609",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-48",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:transformed-ancestor-floor:610",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-49",
+      "claim_signature": "api_contract:ChatWidget.tsx:mount-handle-appendblocks:568",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-50",
+      "claim_signature": "api_contract:ChatWidget.tsx:appendblocks-documented-behavior:508",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-51",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:visualviewport-stand-in:87",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-52",
+      "claim_signature": "dependency_interaction:ChatWidget.test.tsx:jsdom-default-viewport:80",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-53",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:kit-bot-message-class:382",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-54",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:radchat-blocks-class:416",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    }
+  ],
+  "fix_files": [
+    "src/blocks/BlockRenderer.test.tsx",
+    "src/blocks/BlockRenderer.tsx",
+    "src/chat/ChatController.test.ts",
+    "src/chat/ChatController.ts",
+    "src/widget/ChatWidget.interop.test.tsx"
+  ],
+  "synthesized": false
+}

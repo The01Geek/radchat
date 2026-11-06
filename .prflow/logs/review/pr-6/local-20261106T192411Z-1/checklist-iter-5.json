@@ -1,0 +1,931 @@
+[
+  {
+    "id": "VC-1",
+    "category": "api_contract",
+    "claim": "README says blocks appended through appendBlocks before the widget first opens appear when it opens.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Blocks appended before the widget first opens appear when it opens.",
+    "source_file": "README.md",
+    "source_line": 75,
+    "verify_against": "src/widget/ChatWidget.tsx appendBlocks implementation and the first-mount initialMessages path",
+    "verify_hint": "Check the `appendBlocks` useCallback in `src/widget/ChatWidget.tsx` (around lines 499-540): before first open the blocks must be buffered and fed into the initial messages of the first chatbot mount.",
+    "claim_signature": "api_contract:README.md:buffered-before-first-open:75",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-1"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-2",
+    "category": "api_contract",
+    "claim": "README says appended blocks stay when the saved conversation is restored.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "They stay when the saved conversation is restored",
+    "source_file": "README.md",
+    "source_line": 75,
+    "verify_against": "src/widget/ChatWidget.tsx restore path that carries appended blocks over a restore",
+    "verify_hint": "Check `src/widget/ChatWidget.tsx` around the comment 'What appendBlocks added to the current conversation, carried over a restore' (line ~304) and the restore function documented near line 364; also check whether appendBlocks bumps `controller.activity`, which `ChatController` uses to skip restore once the user has interacted.",
+    "claim_signature": "api_contract:README.md:kept-across-restore:75",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-2"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-3",
+    "category": "api_contract",
+    "claim": "README says appended blocks are dropped by a new conversation or a History switch.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "are dropped by a new conversation or a History switch",
+    "source_file": "README.md",
+    "source_line": 75,
+    "verify_against": "src/widget/ChatWidget.tsx new-conversation and History-switch handlers",
+    "verify_hint": "Check how `src/widget/ChatWidget.tsx` clears the appended-blocks buffer in its `onNewConversation` host callback and in the History selection handler that calls `controller.switchConversation`.",
+    "claim_signature": "api_contract:README.md:dropped-on-new-or-switch:75",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-3"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-4",
+    "category": "api_contract",
+    "claim": "README says appended blocks live only in the widget, are not sent to the data source, and are lost on a page reload.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "They live only in the widget, not in your data source, so a page reload loses them.",
+    "source_file": "README.md",
+    "source_line": 75,
+    "verify_against": "src/widget/ChatWidget.tsx appendBlocks and its persistence (localStorage) code",
+    "verify_hint": "Check `appendBlocks` in `src/widget/ChatWidget.tsx` for any call into `dataSource` or any write to the widget's localStorage keys (storageKey prefix).",
+    "claim_signature": "api_contract:README.md:widget-only-lost-on-reload:75",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-4"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-5",
+    "category": "api_contract",
+    "claim": "README says appendBlocks adds an assistant message to the current conversation without a user turn.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "`appendBlocks(blocks)` adds an assistant message to the current conversation without a user turn, for content your app delivers on its own.",
+    "source_file": "README.md",
+    "source_line": 75,
+    "verify_against": "src/widget/ChatWidget.tsx appendBlocks and src/chat/ChatController.ts answerToMessages/addMessages",
+    "verify_hint": "Check that `appendBlocks` in `src/widget/ChatWidget.tsx` converts the blocks with `answerToMessages` and appends them via `controller.addMessages` (or initial messages) with no user message and no `sendTurn` call.",
+    "claim_signature": "api_contract:README.md:assistant-message-no-user-turn:75",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-5"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-6",
+    "category": "api_contract",
+    "claim": "The ChatWidgetHandle.appendBlocks doc says blocks appended before the widget first opens appear when it opens.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Blocks appended before the widget first\n   * opens appear when it opens",
+    "source_file": "src/types.ts",
+    "source_line": 305,
+    "source_line_end": 306,
+    "verify_against": "src/widget/ChatWidget.tsx appendBlocks implementation",
+    "verify_hint": "Check the pre-first-open branch of `appendBlocks` in `src/widget/ChatWidget.tsx` and how buffered blocks reach the first chatbot mount.",
+    "claim_signature": "api_contract:types.ts:buffered-before-first-open:305",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-6"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-7",
+    "category": "api_contract",
+    "claim": "The ChatWidgetHandle.appendBlocks doc says appended blocks stay when the saved conversation is restored.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "they stay when the saved conversation is\n   * restored",
+    "source_file": "src/types.ts",
+    "source_line": 306,
+    "source_line_end": 307,
+    "verify_against": "src/widget/ChatWidget.tsx restore path",
+    "verify_hint": "Check the restore logic in `src/widget/ChatWidget.tsx` near lines 304 and 364 that keeps blocks appendBlocks already added.",
+    "claim_signature": "api_contract:types.ts:kept-across-restore:306",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-7"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-8",
+    "category": "api_contract",
+    "claim": "The ChatWidgetHandle.appendBlocks doc says appended blocks are dropped by a new conversation or a History switch.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "are dropped by a new conversation or a History switch.",
+    "source_file": "src/types.ts",
+    "source_line": 307,
+    "verify_against": "src/widget/ChatWidget.tsx new-conversation and History-switch handlers",
+    "verify_hint": "Check where `src/widget/ChatWidget.tsx` resets its appended-blocks buffer on `onNewConversation` and on History selection.",
+    "claim_signature": "api_contract:types.ts:dropped-on-new-or-switch:307",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-8"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-9",
+    "category": "api_contract",
+    "claim": "The ChatWidgetHandle.appendBlocks doc says appended blocks live only in the widget and a page reload loses them.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "They live only in the widget: a page reload loses them.",
+    "source_file": "src/types.ts",
+    "source_line": 308,
+    "verify_against": "src/widget/ChatWidget.tsx appendBlocks and persistence code",
+    "verify_hint": "Check `appendBlocks` in `src/widget/ChatWidget.tsx` for any localStorage write or dataSource call involving the appended blocks.",
+    "claim_signature": "api_contract:types.ts:widget-only-lost-on-reload:308",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-9"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-10",
+    "category": "api_contract",
+    "claim": "README says a failed message the user typed (not text a command sent) goes back into the input when the input is empty.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "When the failed message is one the user typed (not text a command sent) and the input is empty, the message goes back into the input",
+    "source_file": "README.md",
+    "source_line": 120,
+    "verify_against": "src/widget/ChatWidget.tsx onTurnFailed host callback and src/chat/ChatController.ts performTurn",
+    "verify_hint": "Check the `onTurnFailed: (failedText) => ...` callback in `src/widget/ChatWidget.tsx` (line ~342) for the empty-input check and how it writes the text back into the kit input, and the `typed` gating in `performTurn` of `src/chat/ChatController.ts` (lines 428-440).",
+    "claim_signature": "api_contract:README.md:typed-refill-empty-input:120",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-10"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-11",
+    "category": "api_contract",
+    "claim": "README says a refilled failed message gets its attachments back unless new ones are staged.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "with its attachments unless new ones are staged",
+    "source_file": "README.md",
+    "source_line": 120,
+    "verify_against": "src/chat/ChatController.ts performTurn re-staging and src/widget/ChatWidget.tsx onTurnFailed return value",
+    "verify_hint": "Check `performTurn` in `src/chat/ChatController.ts` lines 428-439 (re-staging only when `refilled` and `stagedAttachments` is empty) together with what `onTurnFailed` in `src/widget/ChatWidget.tsx` returns.",
+    "claim_signature": "api_contract:README.md:refill-restores-attachments:120",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-11"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-12",
+    "category": "api_contract",
+    "claim": "README says returning `blocks: []` with no `sources` ends a turn without a reply.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Return `blocks: []` (with no `sources`) to end a turn without a reply, for example when your app answers through `appendBlocks`.",
+    "source_file": "README.md",
+    "source_line": 120,
+    "verify_against": "src/chat/ChatController.ts performTurn silent computation and src/data/fetch/createFetchDataSource.ts response mapping",
+    "verify_hint": "Check the `silent` expression in `performTurn` of `src/chat/ChatController.ts` (lines 405-414) and whether `createFetchDataSource` in `src/data/fetch/createFetchDataSource.ts` passes a backend's `blocks: []` through unchanged to the controller.",
+    "claim_signature": "api_contract:README.md:empty-blocks-silent:120",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-12"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-13",
+    "category": "data_format_assumption",
+    "claim": "performTurn distinguishes a response with no `blocks` field (apology) from one with `blocks: []` and no sources (silent); this holds end to end only if the bundled data sources keep a missing `blocks` field absent rather than defaulting it to an empty array.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 405,
+    "source_line_end": 414,
+    "verify_against": "src/data/fetch/createFetchDataSource.ts and src/data/mock/createMockDataSource.ts response construction",
+    "verify_hint": "Check how `createFetchDataSource` in `src/data/fetch/createFetchDataSource.ts` builds its `SendMessageResponse` from the HTTP JSON (e.g. any `blocks ?? []` or `Array.isArray(...) ? ... : []` normalization) and how `createMockDataSource` shapes its answers.",
+    "claim_signature": "data_format_assumption:ChatController.ts:missing-vs-empty-blocks:405",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-13"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-14",
+    "category": "data_format_assumption",
+    "claim": "SendMessageResponse.blocks doc says an empty array with no `sources` ends the turn without a reply; the code treats both an omitted `sources` and an empty `sources: []` as no sources.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "An empty array with no `sources` ends the turn without a reply,",
+    "source_file": "src/types.ts",
+    "source_line": 111,
+    "verify_against": "src/chat/ChatController.ts performTurn",
+    "verify_hint": "Check the `silent` expression `messages.length === 0 && Array.isArray(blocks) && blocks.length === 0 && !response?.sources?.length` in `performTurn` of `src/chat/ChatController.ts` (lines 409-410) for each shape of `sources` (omitted, `[]`, non-empty, non-array).",
+    "claim_signature": "data_format_assumption:types.ts:empty-blocks-silent:111",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-14"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-15",
+    "category": "api_contract",
+    "claim": "ControllerHost.onTurnFailed contract: the widget's implementation returns true only when it actually put the failed text back into the composer, so the controller re-stages attachments only in that case.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 77,
+    "source_line_end": 82,
+    "verify_against": "src/widget/ChatWidget.tsx onTurnFailed host callback",
+    "verify_hint": "Check the `onTurnFailed: (failedText) => ...` callback in `src/widget/ChatWidget.tsx` (line ~342): every branch that does not refill must return something other than `true`, and the refill branch must return `true` (the controller compares with `=== true` at ChatController.ts line 431).",
+    "claim_signature": "api_contract:ChatController.ts:onturnfailed-return-contract:77",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-15"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-16",
+    "category": "api_contract",
+    "claim": "A slash command requested through `open({ command })` reaches `runCommandInput` without `{ typed: true }`, so a failed host-requested command is not handed to onTurnFailed; only `handleUserInput` (kit input) passes `typed: true`.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 267,
+    "verify_against": "src/widget/ChatWidget.tsx open() handling of OpenOptions.command",
+    "verify_hint": "Check how `open` in `src/widget/ChatWidget.tsx` invokes `controller.runCommandInput` for `options.command`, and any other caller of `runCommandInput` or `sendTurn` in `src/widget/ChatWidget.tsx`, for the options it passes.",
+    "claim_signature": "api_contract:ChatController.ts:host-command-not-typed:267",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-16"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-17",
+    "category": "test_mock_alignment",
+    "claim": "The test models a host-started command as `runCommandInput(input)` with no options; this matches how the widget's `open({ command })` path calls the controller.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.test.ts",
+    "source_line": 203,
+    "source_line_end": 217,
+    "verify_against": "src/widget/ChatWidget.tsx open() implementation",
+    "verify_hint": "Compare the `runCommandInput('/report weekly')` call in this test with the `controller.runCommandInput(...)` call made by `open` in `src/widget/ChatWidget.tsx`.",
+    "claim_signature": "test_mock_alignment:ChatController.test.ts:host-started-command-model:203",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-17"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-18",
+    "category": "dependency_interaction",
+    "claim": "react-chatbot-kit calls MessageParser.parse with the text the user submitted through its input, so `handleUserInput` marking turns `typed: true` covers exactly user-typed text and not text the kit or widget injects.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 254,
+    "source_line_end": 264,
+    "verify_against": "node_modules/react-chatbot-kit (Chatbot input submit handler) and src/widget/ChatWidget.tsx",
+    "verify_hint": "Check where react-chatbot-kit's chat component calls `messageParser.parse(...)` in `node_modules/react-chatbot-kit/build`, and whether `src/widget/ChatWidget.tsx` calls `MessageParser.parse` or `controller.handleUserInput` itself for any non-typed text (e.g. prefill or commands).",
+    "claim_signature": "dependency_interaction:ChatController.ts:kit-parse-is-typed-input:254",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-18"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-19",
+    "category": "api_contract",
+    "claim": "For typed slash input, onTurnFailed receives `text.trim()`, while plain typed text is passed untrimmed; the widget's refill accepts whichever form it receives.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 259,
+    "source_line_end": 263,
+    "verify_against": "src/widget/ChatWidget.tsx onTurnFailed callback",
+    "verify_hint": "Check `handleUserInput` (lines 259-263) and the `failedText` handling in the `onTurnFailed` callback of `src/widget/ChatWidget.tsx`.",
+    "claim_signature": "api_contract:ChatController.ts:refill-text-trimming:259",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-19"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-20",
+    "category": "api_contract",
+    "claim": "The sendTurn doc says text marked `typed` is handed back through onTurnFailed if the turn fails.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "`typed` marks text\n   * the user typed, which is handed back through `onTurnFailed` if the turn fails.",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 358,
+    "source_line_end": 359,
+    "verify_against": "src/chat/ChatController.ts performTurn catch block",
+    "verify_hint": "Check the catch block of `performTurn` (lines 415-440): the early return at line 416 for an aborted request, a changed generation or a disposed controller, and the `if (typed)` branch at line 428.",
+    "claim_signature": "api_contract:ChatController.ts:typed-handed-back-on-failure:358",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-20"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-21",
+    "category": "absolute_claim",
+    "claim": "notifyAttachmentListeners' doc says a listener that throws cannot stop the remaining listeners from being notified.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Tell every listener the staged attachments changed; one that throws cannot stop the rest.",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 237,
+    "verify_against": "src/chat/ChatController.ts notifyAttachmentListeners",
+    "verify_hint": "Trace `notifyAttachmentListeners` (lines 238-246) with a listener that throws while `console.error` is itself replaced by a throwing function, and with a listener that throws a non-Error value.",
+    "claim_signature": "absolute_claim:ChatController.ts:throwing-listener-cannot-stop-rest:237",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-21"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-22",
+    "category": "api_contract",
+    "claim": "notifyAttachmentListeners passes the controller's own `stagedAttachments` array to listeners; the AttachmentPicker stores that reference as `attachmentsRef.current` and later updates replace it rather than mutating it in place, so the controller's staged list cannot change behind its back.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 241,
+    "verify_against": "src/attachments/AttachmentPicker.tsx subscribeReset listener and attachment add/remove handlers",
+    "verify_hint": "Check the `subscribeReset((next) => { attachmentsRef.current = next; ... })` effect (lines 92-98) and every place `AttachmentPicker` changes `attachmentsRef.current` (add, remove, camera capture) in `src/attachments/AttachmentPicker.tsx` for in-place array mutation such as push or splice.",
+    "claim_signature": "api_contract:ChatController.ts:shared-staged-array:241",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-22"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-23",
+    "category": "api_contract",
+    "claim": "The AttachmentPicker comment says the picker follows the controller: chips clear when a message takes the attachments and are restored when a failed turn hands them back.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Follow the controller: clear chips when a message takes the attachments,\n  // restore them when a failed turn hands them back.",
+    "source_file": "src/attachments/AttachmentPicker.tsx",
+    "source_line": 90,
+    "source_line_end": 91,
+    "verify_against": "src/widget/ChatWidget.tsx wiring of AttachmentPicker subscribeReset, and src/chat/ChatController.ts notify sites",
+    "verify_hint": "Check that `src/widget/ChatWidget.tsx` passes `controller.onAttachmentsReset` (or an equivalent) as the picker's `subscribeReset`, and that `ChatController` notifies at `takeAttachments` (line 233) and in the failed-turn re-stage (lines 436-439).",
+    "claim_signature": "api_contract:AttachmentPicker.tsx:chips-follow-controller:90",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-23"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-24",
+    "category": "api_contract",
+    "claim": "The onAttachmentsReset doc says the picker's chips are cleared when a message takes the attachments and restored when a failed turn hands them back.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "The picker subscribes so its chips follow the staged attachments: cleared\n   * when a message takes them, restored when a failed turn hands them back.",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 222,
+    "source_line_end": 223,
+    "verify_against": "src/chat/ChatController.ts takeAttachments, newConversation and performTurn",
+    "verify_hint": "Check every call to `notifyAttachmentListeners` in `src/chat/ChatController.ts` (takeAttachments line 233, also reached from `newConversation` line 336, and performTurn line 438) and whether `setAttachments` notifies.",
+    "claim_signature": "api_contract:ChatController.ts:chips-follow-controller:222",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-24"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-25",
+    "category": "api_contract",
+    "claim": "The re-stage guard `this.stagedAttachments.length === 0` detects files the user staged during the failing turn, which requires the picker's changes to reach `controller.setAttachments` synchronously.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/chat/ChatController.ts",
+    "source_line": 436,
+    "source_line_end": 439,
+    "verify_against": "src/widget/ChatWidget.tsx AttachmentPicker onAttachmentsChange wiring",
+    "verify_hint": "Check what `onAttachmentsChange` prop `src/widget/ChatWidget.tsx` passes to `AttachmentPicker` and whether it calls `controller.setAttachments` directly (not via deferred React state).",
+    "claim_signature": "api_contract:ChatController.ts:new-staged-files-detected:436",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-25"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-26",
+    "category": "api_contract",
+    "claim": "The blockGuards module header says it holds block shape checks and the host-renderer lookup, shared by BlockRenderer and appendBlocks.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Block shape checks and the host-renderer lookup, shared by BlockRenderer and appendBlocks.",
+    "source_file": "src/blocks/blockGuards.ts",
+    "source_line": 1,
+    "verify_against": "Imports of blockGuards in src/blocks/BlockRenderer.tsx and src/widget/ChatWidget.tsx",
+    "verify_hint": "Compare the import lines `src/blocks/BlockRenderer.tsx` line 13 and `src/widget/ChatWidget.tsx` line 43 with the module's exports.",
+    "claim_signature": "api_contract:blockGuards.ts:module-header-usage:1",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-26"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-27",
+    "category": "api_contract",
+    "claim": "The customRendererFor doc says it returns the host renderer only for an own function property and ignores inherited members.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "The host's renderer for a custom type: an own function property only; inherited members are ignored.",
+    "source_file": "src/blocks/blockGuards.ts",
+    "source_line": 10,
+    "verify_against": "src/blocks/blockGuards.ts customRendererFor body",
+    "verify_hint": "Check lines 15-17 of `customRendererFor` in `src/blocks/blockGuards.ts` with an own non-function entry, an inherited name such as `toString`, and a null-prototype `blockRenderers` object.",
+    "claim_signature": "api_contract:blockGuards.ts:own-function-only:10",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-27"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-28",
+    "category": "api_contract",
+    "claim": "The isMalformedBlock doc says it flags a block with no string `type`, or a built-in type with the wrong shape, which BlockRenderer's built-in renderers skip.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "No string `type`, or a built-in type (`text`, `table`, `chart`) with the\n * wrong shape, which BlockRenderer's built-ins skip.",
+    "source_file": "src/blocks/blockGuards.ts",
+    "source_line": 21,
+    "source_line_end": 22,
+    "verify_against": "src/blocks/BlockRenderer.tsx renderBlock",
+    "verify_hint": "Trace `renderBlock` in `src/blocks/BlockRenderer.tsx` (lines 98-113) for `{ type: 'text', content: 1 }` and `{ type: 'chart' }`: the built-in branches use the same guards, and the block then falls through to `customRendererFor(blockRenderers, block.type)`.",
+    "claim_signature": "api_contract:blockGuards.ts:malformed-doc-builtins-skip:21",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-28"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-29",
+    "category": "absolute_claim",
+    "claim": "The test name says BlockRenderer never treats Object.prototype names as host renderers; the test itself only passes an empty `blockRenderers` object.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "never treats Object.prototype names as host renderers",
+    "source_file": "src/blocks/BlockRenderer.test.tsx",
+    "source_line": 67,
+    "verify_against": "src/blocks/blockGuards.ts customRendererFor and src/blocks/BlockRenderer.tsx renderBlock",
+    "verify_hint": "Trace `customRendererFor` in `src/blocks/blockGuards.ts` with `blockRenderers = { toString: () => 'x' }` and a block `{ type: 'toString' }` (an own property with an Object.prototype name).",
+    "claim_signature": "absolute_claim:BlockRenderer.test.tsx:prototype-names-never-renderers:67",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-29"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-30",
+    "category": "dependency_interaction",
+    "claim": "The replay loop counts a nominal 10 ms per retry (`waitedMs += 10`), not elapsed time: when timers fire on schedule queued calls are dropped about 5 s after the first queued call; when the host throttles or delays setTimeout (e.g. a background tab) the real wait before dropping is longer; when the ref attaches at any point before the count reaches REPLAY_TIMEOUT_MS the calls replay.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/mount.tsx",
+    "source_line": 49,
+    "source_line_end": 64,
+    "verify_against": "src/mount.tsx withHandle/flush and the REPLAY_TIMEOUT_MS doc at line 11",
+    "verify_hint": "Check `flush` inside `withHandle` in `src/mount.tsx` (lines 49-63) against the `REPLAY_TIMEOUT_MS` doc comment at line 11.",
+    "claim_signature": "dependency_interaction:mount.tsx:replay-timeout-nominal:49",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-30"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-31",
+    "category": "api_contract",
+    "claim": "Handle calls through mount() run in the order they were made, including a call made after the ref attaches while earlier calls are still waiting in the queue for the pending flush.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/mount.tsx",
+    "source_line": 43,
+    "source_line_end": 47,
+    "verify_against": "src/mount.tsx withHandle",
+    "verify_hint": "Trace `withHandle` in `src/mount.tsx`: queue `appendBlocks` while `ref.current` is null, then let React attach the ref, then call `open()` before the `setTimeout(flush, 0)` at line 64 fires; check whether the `ref.current` branch at line 43 runs `open` ahead of the queued call.",
+    "claim_signature": "api_contract:mount.tsx:handle-call-order:43",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-31"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-32",
+    "category": "absolute_claim",
+    "claim": "The comment says a widget that threw while rendering never attaches its handle.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "A widget that threw while rendering never attaches its handle.",
+    "source_file": "src/mount.tsx",
+    "source_line": 52,
+    "verify_against": "React 18 createRoot error handling in node_modules/react-dom and src/mount.tsx update()",
+    "verify_hint": "Trace a ChatWidget that throws on its first render and then renders successfully after `update()` calls `root.render` again within the 5 s window (src/mount.tsx lines 75-78), and a throw caught by an error boundary inside ChatWidget; check whether `ref.current` is set in either case.",
+    "claim_signature": "absolute_claim:mount.tsx:thrown-widget-never-attaches:52",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-32"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-33",
+    "category": "dependency_interaction",
+    "claim": "After unmount(), calling update() on the returned object does not throw: it calls `root.render` on a root React has already unmounted, and React's behavior for that call is what determines the outcome.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/mount.tsx",
+    "source_line": 75,
+    "source_line_end": 83,
+    "verify_against": "node_modules/react-dom ReactDOMRoot render after unmount",
+    "verify_hint": "Check `ReactDOMRoot.prototype.render` in `node_modules/react-dom/cjs/react-dom.development.js` for the 'Cannot update an unmounted root' check, against `update()` in `src/mount.tsx`, which has no `unmounted` guard.",
+    "claim_signature": "dependency_interaction:mount.tsx:update-after-unmount:75",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-33"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-34",
+    "category": "test_mock_alignment",
+    "claim": "The test comment says React renders outside the faked timers, so with only setTimeout faked the handle never attaches within the synchronous test.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "React renders outside the faked timers, so within this synchronous test the\n    // handle never attaches, standing in for a widget that threw while rendering.",
+    "source_file": "src/mount.test.tsx",
+    "source_line": 42,
+    "source_line_end": 43,
+    "verify_against": "node_modules/scheduler host-callback scheduling under the vitest jsdom environment",
+    "verify_hint": "Check which primitive `node_modules/scheduler/cjs/scheduler.development.js` uses to schedule work (setImmediate, MessageChannel or setTimeout) and whether that primitive is among `vi.useFakeTimers({ toFake: ['setTimeout'] })`'s faked APIs.",
+    "claim_signature": "test_mock_alignment:mount.test.tsx:react-outside-fake-timers:42",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-34"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-35",
+    "category": "test_mock_alignment",
+    "claim": "The test asserts a single pending timer right after mount() plus appendBlocks, assuming React has not attached the ref synchronously inside mount(), so the call is queued for replay.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "queued for replay, not delivered synchronously",
+    "source_file": "src/mount.test.tsx",
+    "source_line": 29,
+    "verify_against": "react-dom createRoot().render scheduling and src/mount.tsx withHandle",
+    "verify_hint": "Check that `root.render` from `react-dom/client` (node_modules/react-dom) schedules the commit asynchronously rather than committing synchronously, so `ref.current` is null when `withHandle` runs at `src/mount.tsx` line 43.",
+    "claim_signature": "test_mock_alignment:mount.test.tsx:not-delivered-synchronously:29",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch1:VC-35"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-36",
+    "category": "dependency_interaction",
+    "claim": "react-chatbot-kit's CommonJS module.exports carries a `Chatbot` property that is the Chatbot component, and the component itself carries no `Chatbot` property, so unwrapChatbot returns the component whether the default import is the component or the whole module.exports object.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/kitInterop.ts",
+    "source_line": 7,
+    "source_line_end": 8,
+    "verify_against": "node_modules/react-chatbot-kit (package.json entry fields and the built entry file's export assignments); src/vendor.d.ts declaration of the kit's default export",
+    "verify_hint": "Check node_modules/react-chatbot-kit/package.json `main` and the file it names for how `Chatbot` and the default export are assigned to module.exports/exports, and whether the Chatbot component has a static `Chatbot` member.",
+    "claim_signature": "dependency_interaction:kitInterop.ts:kit-default-chatbot-unwrap:8",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-1"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-37",
+    "category": "absolute_claim",
+    "claim": "The comment asserts that, under Node ESM, a named import `import { Chatbot }` from react-chatbot-kit cannot see the kit's named exports, which is why the default import is unwrapped instead.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Node ESM cannot see the kit's named exports.",
+    "source_file": "src/widget/kitInterop.ts",
+    "source_line": 4,
+    "source_line_end": 5,
+    "verify_against": "node_modules/react-chatbot-kit package.json (`main`, `module`, `exports`, `type` fields) and its built CommonJS entry",
+    "verify_hint": "Falsifying input to trace: a kit entry that has an ESM entry Node resolves (an `exports` map or `type: module`), or a CJS entry assigning `exports.Chatbot = ...` / `Object.defineProperty(exports, 'Chatbot', ...)` in a form Node's CommonJS named-export detection recognises; check how node_modules/react-chatbot-kit's built entry assigns its exports.",
+    "claim_signature": "absolute_claim:kitInterop.ts:node-esm-no-named-exports:5",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-2"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-38",
+    "category": "dependency_interaction",
+    "claim": "The comment asserts react-chatbot-kit ships as CommonJS, so a consumer's default import is either the Chatbot component or the module.exports object depending on interop.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "react-chatbot-kit ships as CommonJS.",
+    "source_file": "src/widget/kitInterop.ts",
+    "source_line": 2,
+    "source_line_end": 4,
+    "verify_against": "node_modules/react-chatbot-kit/package.json and its built entry file",
+    "verify_hint": "Check node_modules/react-chatbot-kit/package.json for `main`, `module`, `exports` and `type`, and whether any entry a bundler or Node would pick is an ES module.",
+    "claim_signature": "dependency_interaction:kitInterop.ts:kit-ships-commonjs:2",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-3"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-39",
+    "category": "test_mock_alignment",
+    "claim": "The test's stand-in `{ Chatbot, createChatBotMessage }` matches the shape of react-chatbot-kit's real module.exports object: the component is under the key `Chatbot`.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/kitInterop.test.ts",
+    "source_line": 11,
+    "source_line_end": 13,
+    "verify_against": "node_modules/react-chatbot-kit built entry (its module.exports keys)",
+    "verify_hint": "Check the export assignments in the file named by node_modules/react-chatbot-kit/package.json `main` for the `Chatbot` and `createChatBotMessage` keys.",
+    "claim_signature": "test_mock_alignment:kitInterop.test.ts:kit-namespace-mock-shape:12",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-4"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-40",
+    "category": "dependency_interaction",
+    "claim": "isMalformedBlock returns true for any value whose `type` is not a string (including null and non-objects), so every block left in `wellFormed` hands a string `type` to isBuiltInType and customRendererFor at line 527.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 518,
+    "source_line_end": 527,
+    "verify_against": "src/blocks/blockGuards.ts",
+    "verify_hint": "Check the `isMalformedBlock` function in src/blocks/blockGuards.ts for how it treats a block whose `type` is a number, object or missing.",
+    "claim_signature": "dependency_interaction:ChatWidget.tsx:wellformed-type-is-string:518",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-5"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-41",
+    "category": "dependency_interaction",
+    "claim": "The types isBuiltInType accepts are the types BlockRenderer renders without a host renderer, so the 'no blockRenderers function (yet)' warning fires for a type BlockRenderer would need a host renderer for and not for a built-in type.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 523,
+    "source_line_end": 532,
+    "verify_against": "src/blocks/blockGuards.ts and src/blocks/BlockRenderer.tsx",
+    "verify_hint": "Compare the type list in `isBuiltInType` (src/blocks/blockGuards.ts) with the built-in branches (isTextBlock, isTableBlock, isChartBlock and any others) in BlockRenderer's render dispatch in src/blocks/BlockRenderer.tsx.",
+    "claim_signature": "dependency_interaction:ChatWidget.tsx:builtin-types-match-renderer:527",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-6"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-42",
+    "category": "dependency_interaction",
+    "claim": "The comment asserts that until the Chatbot for the latest reset is mounted the controller is not bound to it and initialMessages seeds that mount; the code relies on createKitAdapters' ActionProvider binding the controller to the Chatbot keyed by chatResetKey no later than ChatWidget's layout effect at lines 492-494 records mountedResetKeyRef in the same commit, so equal mounted and requested keys mean controller.addMessages reaches the mounted Chatbot.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "controller is not bound to it; initialMessages seeds that mount.",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 539,
+    "source_line_end": 543,
+    "verify_against": "src/chat/ChatController.ts (createKitAdapters, addMessages and the binding to the kit's setState); src/chat/chatConfig.tsx",
+    "verify_hint": "Check `createKitAdapters` in src/chat/ChatController.ts: whether the ActionProvider binds the controller during render, in a layout effect or in a passive effect, and what `addMessages` does when no kit is bound or the bound kit has unmounted.",
+    "claim_signature": "dependency_interaction:ChatWidget.tsx:controller-bound-at-mount:542",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-7"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-43",
+    "category": "api_contract",
+    "claim": "ControllerHost declares `onTurnFailed(failedText)` returning a boolean, ChatController calls it with the failed turn's input text (a typed slash command included), and interprets the return as whether the composer was refilled; the widget returns false when the input element is missing or non-empty and true after refilling.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 342,
+    "source_line_end": 348,
+    "verify_against": "src/chat/ChatController.ts (ControllerHost type and the onTurnFailed call site)",
+    "verify_hint": "Check the `ControllerHost` interface and the code that calls `host.onTurnFailed` in src/chat/ChatController.ts for the argument passed and what happens on a true versus false return (attachments re-staging included).",
+    "claim_signature": "api_contract:ChatWidget.tsx:onturnfailed-host-contract:342",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-8"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-44",
+    "category": "absolute_claim",
+    "claim": "The comment asserts the failed-turn refill happens only when the composer is still empty and never overwrites what the user typed.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Only refill when the composer is still empty — never overwrite typing.",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 344,
+    "source_line_end": 346,
+    "verify_against": "src/widget/ChatWidget.tsx onTurnFailed; src/commands/SlashAutocomplete.tsx setChatInputValue; the react-chatbot-kit input's controlled state",
+    "verify_hint": "Inputs to trace: text the user typed that the kit's React state holds but the DOM `input.value` does not yet reflect when onTurnFailed runs; a widget whose root contains more than one `.react-chatbot-kit-chat-input` (querySelector picks the first); trace each through onTurnFailed and `setChatInputValue` in src/commands/SlashAutocomplete.tsx.",
+    "claim_signature": "absolute_claim:ChatWidget.tsx:refill-never-overwrites-typing:344",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-9"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-45",
+    "category": "dependency_interaction",
+    "claim": "The comment asserts that a turn, command, new conversation or History switch since the restore started makes the restore lose; the code relies on ChatController.activity changing on every user turn and command run (and staying 0 until the first, for the check at line 419) and on requestedResetKeyRef changing through remountChat for a new conversation or History switch.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "A turn, command, new conversation or History switch since the restore started wins.",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 381,
+    "source_line_end": 387,
+    "verify_against": "src/chat/ChatController.ts (`activity` and the methods that change it); src/widget/ChatWidget.tsx switchToConversation/loadConversation and onNewConversation",
+    "verify_hint": "Check where `activity` is incremented in src/chat/ChatController.ts (handleUserInput, runCommandInput, newConversation, addMessages), and in ChatWidget.tsx when a History switch through `switchToConversation` calls remountChat relative to its own await of getConversation.",
+    "claim_signature": "dependency_interaction:ChatWidget.tsx:restore-loses-to-activity:384",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-10"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-46",
+    "category": "api_contract",
+    "claim": "The docstring asserts that a `restore` load (the saved conversation at load) is skipped once the user has interacted or the transcript was reset, that a restore keeps the blocks appendBlocks already added, and that a History switch drops them.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "conversation at load) is skipped once the user has interacted or the",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 362,
+    "source_line_end": 366,
+    "verify_against": "src/widget/ChatWidget.tsx loadConversation (lines 367-403) and src/chat/ChatController.ts `activity`",
+    "verify_hint": "Check `loadConversation` in src/widget/ChatWidget.tsx: the restore guard at 382-387, the `appendedRef` reset at 372 and 389, and which user interactions change `controller.activity` in src/chat/ChatController.ts.",
+    "claim_signature": "api_contract:ChatWidget.tsx:loadconversation-restore-doc:362",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-11"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-47",
+    "category": "dependency_interaction",
+    "claim": "The comment asserts that in CSS a min size beats a max size when they conflict, which is why the floating window's minWidth and minHeight are capped with min(..., max(100%, ...)) alongside maxWidth 100%.",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "Cap the minimums at 100% too (a min size beats a max",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 608,
+    "source_line_end": 615,
+    "verify_against": "CSS 2.1 section 10.4 / CSS Box Sizing min-width and max-width resolution",
+    "verify_hint": "Check the CSS min-width/max-width resolution rule (CSS 2.1 section 10.4: when min-width exceeds max-width, max-width is set to min-width) against the windowStyle block in src/widget/ChatWidget.tsx.",
+    "claim_signature": "dependency_interaction:ChatWidget.tsx:css-min-beats-max:609",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-12"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-48",
+    "category": "dependency_interaction",
+    "claim": "The comment asserts that the 50vw/50dvh floor keeps the floating window visible when a transformed ancestor becomes its containing block (so 100% resolves against that ancestor rather than the viewport).",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "the 50vw/50dvh floor keeps the window visible when a",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 610,
+    "source_line_end": 613,
+    "verify_against": "CSS Transforms (a transformed ancestor establishes the containing block for position: fixed descendants) and CSS percentage resolution for min-width/min-height",
+    "verify_hint": "Input to trace: a host page wrapping the widget in an ancestor with `transform` and a small or zero-height box; resolve `min(300px, max(100%, 50vw))` and `min(400px, max(100%, 50dvh))` from the windowStyle block in src/widget/ChatWidget.tsx against that containing block.",
+    "claim_signature": "dependency_interaction:ChatWidget.tsx:transformed-ancestor-floor:610",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-13"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-49",
+    "category": "api_contract",
+    "claim": "The handle returned by mount() exposes appendBlocks and forwards each call (queuing it before the widget renders) to the ChatWidget ref's appendBlocks with the same blocks argument.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 568,
+    "verify_against": "src/mount.tsx and the ChatWidgetHandle type in src/types.ts",
+    "verify_hint": "Check how src/mount.tsx builds the handle it returns: whether it lists ChatWidgetHandle methods explicitly or proxies them, and whether appendBlocks is forwarded and queued like open/close.",
+    "claim_signature": "api_contract:ChatWidget.tsx:mount-handle-appendblocks:568",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-14"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-50",
+    "category": "api_contract",
+    "claim": "The appendBlocks behavior documented for hosts (README and the ChatWidgetHandle JSDoc) matches the implementation: blocks buffer before the first open, append live while mounted, are dropped on a new conversation or History switch, are kept over the saved-conversation restore, malformed and blank blocks are ignored with a warning, a non-array is ignored with an error, and calls after unmount warn and do nothing.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.tsx",
+    "source_line": 508,
+    "source_line_end": 546,
+    "verify_against": "README.md (appendBlocks / ChatWidgetHandle section) and src/types.ts (ChatWidgetHandle.appendBlocks JSDoc)",
+    "verify_hint": "Compare the appendBlocks description in README.md and the JSDoc on `appendBlocks` in the ChatWidgetHandle interface in src/types.ts with `appendBlocks`, `onNewConversation` and `loadConversation` in src/widget/ChatWidget.tsx.",
+    "claim_signature": "api_contract:ChatWidget.tsx:appendblocks-documented-behavior:508",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-15"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-51",
+    "category": "test_mock_alignment",
+    "claim": "The comment asserts jsdom has no visual viewport, so defining window.visualViewport as a bare EventTarget stands in for one and Reflect.deleteProperty at line 106 restores jsdom's original state; the stand-in matches the real VisualViewport for the widget's use (addEventListener/removeEventListener of 'resize').",
+    "claim_provenance": "source_authored",
+    "source_excerpt": "jsdom has no visual viewport; a bare event target stands in for one.",
+    "source_file": "src/widget/ChatWidget.test.tsx",
+    "source_line": 87,
+    "source_line_end": 89,
+    "verify_against": "node_modules/jsdom (Window implementation) and the useEffect at src/widget/ChatWidget.tsx 237-245",
+    "verify_hint": "Check node_modules/jsdom/lib/jsdom/browser/Window.js for any `visualViewport` property, and compare the stand-in's use with the listener effect at ChatWidget.tsx 237-245.",
+    "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:visualviewport-stand-in:87",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-16"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-52",
+    "category": "dependency_interaction",
+    "claim": "The tests restore window.innerWidth to 1024 and window.innerHeight to 768 in their finally blocks, assuming those are jsdom's default viewport values, so later tests see the original viewport.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.test.tsx",
+    "source_line": 79,
+    "source_line_end": 82,
+    "verify_against": "node_modules/jsdom Window implementation (innerWidth/innerHeight defaults); src/test/setup.ts",
+    "verify_hint": "Check `innerWidth` and `innerHeight` in node_modules/jsdom/lib/jsdom/browser/Window.js and whether src/test/setup.ts overrides them.",
+    "claim_signature": "dependency_interaction:ChatWidget.test.tsx:jsdom-default-viewport:80",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-17"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-53",
+    "category": "test_mock_alignment",
+    "claim": "`.react-chatbot-kit-chat-bot-message` is the class react-chatbot-kit puts on each bot message bubble, so the bubble count before and after the ignored appends measures whether any message was added.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.test.tsx",
+    "source_line": 382,
+    "verify_against": "node_modules/react-chatbot-kit built entry (bot message component markup) and src/chat/chatConfig.tsx (any custom botChatMessage widget)",
+    "verify_hint": "Check the bot chat message component's className in node_modules/react-chatbot-kit's built entry, and whether src/chat/chatConfig.tsx replaces the bot message bubble with a custom component that drops that class.",
+    "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:kit-bot-message-class:382",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-18"
+    ],
+    "reused_from_iter_prev": false
+  },
+  {
+    "id": "VC-54",
+    "category": "test_mock_alignment",
+    "claim": "`.radchat-blocks` is the class on the container a block message renders into, so a zero count shows no block message was added for the malformed-only append.",
+    "claim_provenance": "generated_paraphrase",
+    "source_file": "src/widget/ChatWidget.test.tsx",
+    "source_line": 416,
+    "verify_against": "src/blocks/BlockRenderer.tsx and src/chat/chatConfig.tsx",
+    "verify_hint": "Check which component renders the `radchat-blocks` className in src/blocks/BlockRenderer.tsx or src/chat/chatConfig.tsx, and that every message answerToMessages produces for blocks renders through it.",
+    "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:radchat-blocks-class:416",
+    "verification_mode": "agent",
+    "merged_from": [
+      "batch2:VC-19"
+    ],
+    "reused_from_iter_prev": false
+  }
+]

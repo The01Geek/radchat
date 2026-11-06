@@ -1,0 +1,83 @@
+{
+  "root_completeness": "established",
+  "phase3_findings": [
+    {
+      "finding_id": "F-1",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "critical",
+      "description": "The try block in performTurn (ChatController.ts 394-440) covers processing of a successful answer (setConversationId 403, answerToMessages 406, update 411-414), not only sendMessage, and its catch treats every error as a failed turn: it logs '[RadChat] sendMessage failed:', shows the error bubble and, new in this diff, for a typed turn calls onTurnFailed, which refills the composer and re-stages attachments although the backend answered, inviting a duplicate send. Reachable errors: sourcesToMarkdown reading s.title on a null source (116), escapeMd on a non-string title (109), a non-array sources value with a length (115), or host.onConversationIdChange throwing. The broad try predates the PR; the diff gave its catch a 'retry this turn' meaning.",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [394, 440],
+        "kind": "unhandled_exception"
+      },
+      "corroboration": 1
+    },
+    {
+      "finding_id": "F-2",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "suggestion",
+      "description": "customRendererFor (blockGuards.ts 158-165, used at BlockRenderer.tsx 110-113) returns undefined for an own blockRenderers entry that is not a function, so BlockRenderer renders null with no log for blocks from sendMessage, getConversation or a command's replyBlocks; only appendBlocks warns (ChatWidget.tsx 531). Before this diff the same misconfiguration threw.",
+      "defect_signature": {
+        "file": "src/blocks/blockGuards.ts",
+        "line_range": [158, 165],
+        "kind": "other"
+      },
+      "corroboration": 1
+    },
+    {
+      "finding_id": "F-3",
+      "agent": "prflow:pr-test-analyzer",
+      "severity": "suggestion",
+      "description": "No test covers the unwrapChatbot(chatbotKit) call at ChatWidget.tsx 54: under vitest the default import is already the component, so restoring a plain default import of react-chatbot-kit would still pass every test; kitInterop.test.ts tests unwrapChatbot only in isolation and nothing imports the built package under Node ESM.",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [54, 54],
+        "kind": "test_gap"
+      },
+      "corroboration": 1
+    }
+  ],
+  "phase3_dispatched": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "expected_reviewers": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "plan_eligible": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "plan_exclusions": [],
+  "phase3_failed_agents": [],
+  "diff_profile": {
+    "small_diff": false,
+    "config_only": false,
+    "has_new_types": false,
+    "test_relevant": true,
+    "detect_all_audit": false,
+    "file_count": 15,
+    "changed_lines": 1006,
+    "checklist_skipped": null
+  },
+  "cap_drops": {
+    "count": 0,
+    "by_category": {}
+  },
+  "acceptance_criteria": "",
+  "phase4_demoted": [],
+  "reject_drivers": ["F-1"],
+  "criterion_exempt": [],
+  "verdict": "REJECT"
+}

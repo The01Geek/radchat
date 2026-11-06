@@ -1,0 +1,823 @@
+{
+  "iter": 1,
+  "loop_role": "fix",
+  "dispatch_mode": "fanned-out",
+  "dispatch_disposition": null,
+  "fix_commit_sha": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+  "fix_decisions": [
+    {
+      "finding_id": "F-1",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "ChatController.performTurn: silent only when blocks is an empty array and nothing renders; blank/invalid blocks apologize again (new test). Contract documented on SendMessageResponse.blocks and in README."
+    },
+    {
+      "finding_id": "F-2",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "ChatWidget: appendedRef carries appended messages into the restore's initialMessages; appends while a remount is pending (requested reset key != mounted key) go to initialMessages. Tests: restore race, same-tick newConversation (both RED on old head)."
+    },
+    {
+      "finding_id": "F-3",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Added widget tests 'keeps appends made before the saved conversation finishes restoring' and 'keeps an append made in the same tick as a new conversation'."
+    },
+    {
+      "finding_id": "F-4",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "appendBlocks TSDoc rewritten to match the fixed behavior (kept on restore, dropped by new conversation or History switch)."
+    },
+    {
+      "finding_id": "F-5",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Added widget tests 'puts the failed text back into an empty composer' and 'leaves text the user already typed alone'."
+    },
+    {
+      "finding_id": "F-6",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "appendBlocks logs console.error and returns for a non-array (no throw, so mount() replay continues) and console.warn for blank/invalid blocks; test covers [], blank, null, single object."
+    },
+    {
+      "finding_id": "F-7",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "README documents appendBlocks, the blocks: [] silent turn and the composer refill."
+    },
+    {
+      "finding_id": "F-8",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "minWidth/minHeight now min(Npx, 100%); comment names the containing-block caveat; keyboard clause removed; re-clamp comment states it also runs on size change. CSS rule confirmed: https://developer.mozilla.org/en-US/docs/Web/CSS/min-width",
+      "step25_classification": "web_confirmed"
+    },
+    {
+      "finding_id": "F-9",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Buffer-drop test now renders closed, appends, starts a new conversation, then opens; the old test is renamed 'drops live appends on a new conversation'; the empty-append test asserts the bubble count and the logs."
+    },
+    {
+      "finding_id": "F-10",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Visual-viewport test comments reworded to what the test does; vacuous line-87 comment replaced; mismatched test name fixed (F-9)."
+    },
+    {
+      "finding_id": "F-11",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Silent-turn comment matches the narrowed condition; ControllerHost.onTurnFailed doc no longer claims the refill and states the command-send exclusion."
+    },
+    {
+      "finding_id": "F-12",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "const Chatbot moved below the imports; comment rewritten to name the change to avoid (named import fails under Node ESM). Note: this move was made with a python3 replace script rather than the Edit tool, against fixing.md item 3; the result was reviewed in the diff."
+    },
+    {
+      "finding_id": "F-13",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "README line 73 and CHANGELOG handle list include appendBlocks; README documents the silent empty-blocks turn."
+    },
+    {
+      "finding_id": "F-14",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "onTurnFailed now runs after the error bubble inside try/catch; test 'shows the error bubble even when onTurnFailed throws' (RED on old head)."
+    },
+    {
+      "finding_id": "F-15",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "performTurn receives the echo flag; onTurnFailed is skipped for command send(text); test (RED on old head)."
+    },
+    {
+      "finding_id": "F-16",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Keyboard/URL-bar claims removed from the listener comment and the test comment; the visual-viewport event is described as a trigger only."
+    },
+    {
+      "finding_id": "F-17",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Viewport overrides restored in finally blocks in both viewport tests."
+    },
+    {
+      "finding_id": "VC-16",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Min sizes capped at 100% so a clamped window fits; comment no longer claims 'never offscreen'."
+    },
+    {
+      "finding_id": "VC-18",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "minWidth/minHeight min(Npx, 100%) so max sizes can take effect; comment corrected."
+    },
+    {
+      "finding_id": "VC-19",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Comment now says the containing block is the viewport unless an ancestor sets transform, filter or similar."
+    },
+    {
+      "finding_id": "VC-28",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "See F-9."
+    },
+    {
+      "finding_id": "VC-31",
+      "decision": "applied",
+      "commit": "6f9bcf174c210e98fbc43da5d1b7e19df1c4577c",
+      "evidence": "Viewport shrinks to 390x600 and the test asserts top '100px' (unclamped would be 248px)."
+    },
+    {
+      "finding_id": "D-1",
+      "decision": "applied",
+      "commit": "712f420e68d1a47734c1ee80ab99bdefaca4ca9f",
+      "original_severity": "suggestion",
+      "source_file": "src/chat/ChatController.test.ts",
+      "claim_text": "'does not report text a command sent as a failed turn' is a vacuous negative: nothing shows the turn ran.",
+      "evidence": "Test now asserts sendMessage got 'generated question' and the transcript holds the echo and the error bubble."
+    },
+    {
+      "finding_id": "D-2",
+      "decision": "applied",
+      "commit": "712f420e68d1a47734c1ee80ab99bdefaca4ca9f",
+      "original_severity": "minor",
+      "source_file": "src/chat/ChatController.test.ts",
+      "claim_text": "Blank/invalid apology test loops two inputs in one it; failure does not say which regressed.",
+      "evidence": "Split into it.each with labelled cases and a length assertion."
+    },
+    {
+      "finding_id": "D-3",
+      "decision": "applied",
+      "commit": "712f420e68d1a47734c1ee80ab99bdefaca4ca9f",
+      "original_severity": "minor",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "A pending restore finishing after a History switch carries B's appended blocks into the saved conversation.",
+      "evidence": "Restore is abandoned when the requested reset key changed since it started; widget test 'abandons a restore that finishes after a new conversation started' (RED at 6f9bcf1)."
+    },
+    {
+      "finding_id": "D-4",
+      "decision": "applied",
+      "commit": "712f420e68d1a47734c1ee80ab99bdefaca4ca9f",
+      "original_severity": "suggestion",
+      "source_file": "src/chat/ChatController.ts",
+      "claim_text": "Refill still fires for a pass-through/unknown command the host started with open({ command }).",
+      "evidence": "Refill keyed on a typed flag set only by handleUserInput; test covers host-started vs typed (RED at 6f9bcf1)."
+    },
+    {
+      "finding_id": "D-5",
+      "decision": "applied",
+      "commit": "c924df4faa77c805f768f1646e66d8f69f575330",
+      "original_severity": "suggestion",
+      "source_file": "src/chat/ChatController.test.ts",
+      "claim_text": "Typed-refill test covers only the unknown-command branch, not a registered pass-through command.",
+      "evidence": "it.each adds a registered pass-through case; mutation dropping options at the pass-through sendTurn fails it."
+    },
+    {
+      "finding_id": "D-6",
+      "decision": "pushed_back",
+      "skip_category": "uncategorized",
+      "original_severity": "important",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "Picking the saved conversation in History while the restore is loading makes the skipped restore delete the saved ID (storage.get('conversation') === saved), so a reload loses the conversation.",
+      "evidence": "Inner re-fix cap (2) spent with this open; Important, so it is carried to iteration 2's Step 1 re-review. Fix direction: remove the saved ID only when the load failed, not when the restore was skipped."
+    },
+    {
+      "finding_id": "D-7",
+      "decision": "pushed_back",
+      "skip_category": "uncategorized",
+      "original_severity": "important",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "min(<px>, 100%) minimums collapse the window to ~0 under a small transformed ancestor (containing block), with no recovery; px minimums used to keep it visible.",
+      "evidence": "Inner re-fix cap (2) spent with this open; Important, so it is carried to iteration 2's Step 1 re-review. Fix direction: viewport units (vw/dvh), which ignore the containing block."
+    },
+    {
+      "finding_id": "D-8",
+      "decision": "pushed_back",
+      "skip_category": "uncategorized",
+      "original_severity": "minor",
+      "source_file": "src/chat/ChatController.ts",
+      "claim_text": "silent checks only blocks.length === 0; blocks: [] with sources that render no markdown ends silently, though docs promise silence only with no sources.",
+      "evidence": "Inner re-fix cap (2) spent with this open. Fix direction: require no sources for the silent turn."
+    }
+  ],
+  "telemetry": {
+    "phase_1": {
+      "calls": 1,
+      "tokens": 220281,
+      "wall_clock_s": 939
+    }
+  },
+  "verification_evidence": {
+    "suite": "npm run check: exit 0; lint 0 errors (18 warnings, all in .prflow/tmp engine view copies); typecheck ok; vitest 13 files, 180 tests passed, none skipped; lib/standalone/demo builds ok",
+    "red_check": "6 new tests failed against 758a2ae in a disposable worktree and pass at the fix",
+    "checkout_note": "gh pr checkout refused because append-blocks is checked out in worktree .claude/worktrees/append-blocks; loop ran there, branch-sync ok at 758a2ae"
+  },
+  "phase3_failed_agents": [],
+  "diff_produced_at_head": "758a2ae0c31a1e544351a9e91dcd9ae03316e945",
+  "iteration_head": "c924df4faa77c805f768f1646e66d8f69f575330",
+  "reference_reads": {
+    "fix_delta": {
+      "status": "verified",
+      "outcome": "promoted",
+      "reason": null
+    }
+  },
+  "phase3_findings": [
+    {
+      "finding_id": "F-1",
+      "severity": "critical",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          381,
+          389
+        ],
+        "kind": "logic_error"
+      },
+      "carve_out": null,
+      "description": "A turn ends with no reply and no log whenever the answer's blocks array renders nothing ([], blank or whitespace-only text, or all-invalid blocks), where these used to show the apology. The apology is reachable only when a host omits the required blocks field, and the silent meaning of an empty blocks array is undocumented.",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 4,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-2",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          460,
+          469
+        ],
+        "kind": "race"
+      },
+      "carve_out": null,
+      "description": "Blocks passed to appendBlocks are silently lost when the saved-conversation restore resolves after them (line 369 replaces the buffer; the line 370 remount drops live appends; appendBlocks never changes controller.activity, so onlyIfIdle does not stop the restore), and when newConversation() or open({ startNewConversation: true }) is followed by appendBlocks in the same tick.",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 3,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-3",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          460,
+          469
+        ],
+        "kind": "logic_error"
+      },
+      "carve_out": null,
+      "description": "The restore and same-tick new-conversation paths that drop appended blocks have no test; src/test/setup.ts clears localStorage after each test and the only new-conversation test appends before newConversation.",
+      "agent": "prflow:pr-test-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-4",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/types.ts",
+        "line_range": [
+          297,
+          302
+        ],
+        "kind": "documented_falsehood"
+      },
+      "carve_out": "self-contradicting-diff",
+      "description": "The published appendBlocks TSDoc says buffered blocks appear when the widget first mounts and that only a new conversation drops the buffer, but a saved-conversation restore resolving after the append replaces the buffer (ChatWidget.tsx line 369).",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 2,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-5",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          337,
+          341
+        ],
+        "kind": "test_gap"
+      },
+      "carve_out": null,
+      "description": "The widget's onTurnFailed composer refill (only when the input is empty) has no widget test; ChatController.test.ts only checks the callback is called (CONTRIBUTING.md line 21).",
+      "agent": "prflow:code-reviewer",
+      "corroboration_count": 3,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-6",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          462,
+          466
+        ],
+        "kind": "api_misuse"
+      },
+      "carve_out": null,
+      "description": "appendBlocks silently drops malformed input (single object, non-array, all-invalid array) and throws a TypeError on null or undefined; in mount() the throw happens inside the replay timer (src/mount.tsx line 44) and abandons later queued calls.",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-7",
+      "severity": "important",
+      "defect_signature": {
+        "file": "README.md",
+        "line_range": [
+          73,
+          73
+        ],
+        "kind": "other"
+      },
+      "carve_out": null,
+      "description": "README does not document appendBlocks(blocks), the silent turn for an empty blocks array, or the composer refill after a failed turn.",
+      "agent": "prflow:requesting-code-review",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-8",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          236,
+          239
+        ],
+        "kind": "documented_falsehood"
+      },
+      "carve_out": "self-contradicting-diff",
+      "description": "Viewport comments claim more than the code does: lines 533-535 say percentage max sizes keep the window fitted, but minWidth 300px and minHeight 400px win over max sizes in CSS, and a transformed ancestor becomes the containing block; lines 236-239 cite the keyboard, but the clamp reads only window.innerWidth and innerHeight; lines 250-253 also re-run on every size change.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 2,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-9",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.test.tsx",
+        "line_range": [
+          387,
+          397
+        ],
+        "kind": "test_gap"
+      },
+      "carve_out": "self-contradicting-diff",
+      "description": "The test 'drops buffered blocks on a new conversation' renders with initialOpen, so nothing is buffered and the documented buffer-drop is untested; 'ignores an empty append' (380-385) only checks that nothing throws.",
+      "agent": "prflow:requesting-code-review",
+      "corroboration_count": 2,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-10",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.test.tsx",
+        "line_range": [
+          102,
+          103
+        ],
+        "kind": "comment_drift"
+      },
+      "carve_out": "self-contradicting-diff",
+      "description": "The test comment says only the visual viewport reports the narrower size, but line 104 narrows window.innerWidth and the stub visual viewport has no size; the line 87 comment is vacuous and the line 387 test name does not match the test.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-11",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          382,
+          385
+        ],
+        "kind": "documented_falsehood"
+      },
+      "carve_out": null,
+      "description": "The silent-update comment names only an empty array though the condition also covers non-empty arrays that render nothing; the line 77 comment says the widget refills the composer though it refills only an empty one and also fires for command-sent text.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-12",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          32,
+          37
+        ],
+        "kind": "style"
+      },
+      "carve_out": null,
+      "description": "The kit interop comment is hard to follow and never names the change a maintainer must avoid; const Chatbot sits between two import blocks.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 2,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-13",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "README.md",
+        "line_range": [
+          73,
+          73
+        ],
+        "kind": "comment_drift"
+      },
+      "carve_out": null,
+      "description": "README.md line 73 and CHANGELOG.md line 17 list the handle methods without appendBlocks(blocks), and neither documents the silent empty-blocks turn.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-14",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          393,
+          393
+        ],
+        "kind": "unhandled_exception"
+      },
+      "carve_out": null,
+      "description": "host.onTurnFailed runs without a try/catch before the error bubble, so a throwing callback leaves no error message and an unhandled rejection.",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-15",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          393,
+          393
+        ],
+        "kind": "logic_error"
+      },
+      "carve_out": null,
+      "description": "onTurnFailed also fires for text a command sent through send(text) (line 289), so command text lands in an empty composer as if the user typed it.",
+      "agent": "prflow:pr-test-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-16",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          236,
+          248
+        ],
+        "kind": "comment_drift"
+      },
+      "carve_out": null,
+      "description": "The visual-viewport listener clamps against layout-viewport sizes, and its test (ChatWidget.test.tsx 85-111) changes innerWidth, so the keyboard case is not exercised.",
+      "agent": "prflow:pr-test-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-17",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.test.tsx",
+        "line_range": [
+          61,
+          83
+        ],
+        "kind": "other"
+      },
+      "carve_out": null,
+      "description": "The re-clamp-on-open test overrides innerWidth and innerHeight without try/finally, so a failed assertion leaks a 390x844 viewport into later tests.",
+      "agent": "prflow:pr-test-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    }
+  ],
+  "diff_profile": {
+    "small_diff": false,
+    "config_only": false,
+    "has_new_types": false,
+    "test_relevant": true,
+    "detect_all_audit": false,
+    "checklist_skipped": null,
+    "file_count": 6,
+    "changed_lines": 242
+  },
+  "phase3_dispatched": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "expected_reviewers": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "cap_drops": {
+    "count": 0,
+    "by_category": {}
+  },
+  "checklist": [
+    {
+      "id": "VC-1",
+      "claim_signature": "data_format_assumption:ChatController.ts:silent-empty-blocks-scope:385",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-2",
+      "claim_signature": "api_contract:ChatController.ts:empty-blocks-documented-semantics",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-3",
+      "claim_signature": "test_mock_alignment:ChatController.test.ts:missing-blocks-stub-reachable:158",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-4",
+      "claim_signature": "dependency_interaction:ChatController.ts:fetch-empty-blocks-passthrough",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-5",
+      "claim_signature": "dependency_interaction:ChatController.ts:mock-custom-empty-blocks",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-6",
+      "claim_signature": "api_contract:ChatController.ts:turn-failed-text-origin:393",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-7",
+      "claim_signature": "api_contract:ChatController.ts:turn-failed-callback-throws:393",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-8",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:kit-clears-input-on-submit:338",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-9",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:refill-updates-kit-state:340",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-10",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:never-overwrite-typing:339",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-11",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:chatbot-default-unwrap:36",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-12",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:kit-interop-comment:32",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-13",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:visual-viewport-clamp-source:243",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-14",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:visualviewport-global-stub:89",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-15",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:jsdom-no-visualviewport:87",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-16",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:never-appears-offscreen:253",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "important"
+    },
+    {
+      "id": "VC-17",
+      "claim_signature": "api_contract:ChatWidget.tsx:reclamp-effect-resize-interaction:254",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-18",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:never-outgrow-viewport:533",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "important"
+    },
+    {
+      "id": "VC-19",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:fixed-containing-block-viewport:534",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-20",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:controller-bound-when-opened:465",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-21",
+      "claim_signature": "api_contract:ChatWidget.tsx:buffer-survives-restore:466",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-22",
+      "claim_signature": "api_contract:ChatWidget.tsx:append-after-reset-lands:465",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-23",
+      "claim_signature": "data_format_assumption:ChatWidget.tsx:append-non-array-input:462",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-24",
+      "claim_signature": "api_contract:ChatWidget.tsx:custom-blocks-reach-renderers:465",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-25",
+      "claim_signature": "api_contract:types.ts:append-blocks-handle-doc:297",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-26",
+      "claim_signature": "api_contract:types.ts:append-blocks-readme-docs",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "important"
+    },
+    {
+      "id": "VC-27",
+      "claim_signature": "api_contract:mount.tsx:queued-append-order:56",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "important"
+    },
+    {
+      "id": "VC-28",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:buffer-drop-test-path:387",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "important"
+    },
+    {
+      "id": "VC-29",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:hello-answer-select:361",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-30",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:joined-text-separate-paragraphs:343",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-31",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:top-assertion-discriminates:80",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-32",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:geometry-storage-key:62",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    }
+  ],
+  "fix_files": [
+    "CHANGELOG.md",
+    "README.md",
+    "src/chat/ChatController.test.ts",
+    "src/chat/ChatController.ts",
+    "src/types.ts",
+    "src/widget/ChatWidget.test.tsx",
+    "src/widget/ChatWidget.tsx"
+  ],
+  "synthesized": false
+}

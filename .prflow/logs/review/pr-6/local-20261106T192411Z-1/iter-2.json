@@ -1,0 +1,588 @@
+{
+  "iter": 2,
+  "loop_role": "fix",
+  "dispatch_mode": "fanned-out",
+  "dispatch_disposition": null,
+  "fix_commit_sha": "f429e620f894698dcd18f69245679fc2d4eabe68",
+  "fix_decisions": [
+    {
+      "finding_id": "F-1",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "Widget test 'drops appended blocks on a History switch'."
+    },
+    {
+      "finding_id": "F-2",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "mount(): unmounted flag stops flush rescheduling and warns on later calls; new src/mount.test.tsx (RED at c924df4)."
+    },
+    {
+      "finding_id": "F-3",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "appendBlocks warns naming the blocks without a string type, even when valid ones are appended; test (RED at c924df4)."
+    },
+    {
+      "finding_id": "F-4",
+      "decision": "pushed_back",
+      "skip_category": "uncategorized",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "The PR bundles viewport re-clamping, CSS size caps, the kit interop unwrap and viewport tests with appendBlocks, against CONTRIBUTING.md 'one concern per PR', none named in the PR description.",
+      "evidence": "Splitting the PR or accepting the bundle is the author's decision, and editing the PR description is an outward-facing change this local loop does not make. Proposed PR-description addition given in the final report. Revisit when the author decides to split or to amend the description."
+    },
+    {
+      "finding_id": "F-5",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "Guard replaced (see D-6 re-check row); widget test 'keeps the saved ID when History opens it while its restore is still loading' (RED at c924df4)."
+    },
+    {
+      "finding_id": "F-6",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "Controller test 'shows the sources of an answer with no blocks'."
+    },
+    {
+      "finding_id": "F-7",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "onTurnFailed returns true when it refilled; controller re-stages the turn's attachments if none are staged and notifies the picker; widget test (RED at c924df4); README updated."
+    },
+    {
+      "finding_id": "F-8",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "silent requires !response.sources?.length; it.each case for untitled sources apologizes (RED at c924df4)."
+    },
+    {
+      "finding_id": "F-9",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "Comment and SendMessageResponse.blocks TSDoc now match the code (empty array with no sources is silent; any other empty answer apologizes)."
+    },
+    {
+      "finding_id": "F-10",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "README says appended blocks live only in the widget and a reload loses them."
+    },
+    {
+      "finding_id": "F-11",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "appendBlocks TSDoc says a page reload loses them."
+    },
+    {
+      "finding_id": "F-12",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "Vite clause removed; comment says the shape depends on the consumer's interop, Node ESM giving module.exports."
+    },
+    {
+      "finding_id": "F-13",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "Restore cleanup comment rewritten to cover the abandoned case along with the failed one."
+    },
+    {
+      "finding_id": "VC-12",
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "evidence": "See F-8/F-9."
+    },
+    {
+      "finding_id": null,
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "Picking the saved conversation in History while the restore is loading makes the skipped restore delete the saved ID (storage.get('conversation') === saved), so a reload loses the conversation.",
+      "evidence": "Iteration-1 D-6 re-check: removal now requires no activity and no reset since the restore started; test covers it."
+    },
+    {
+      "finding_id": null,
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "min(<px>, 100%) minimums collapse the window to ~0 under a small transformed ancestor (containing block), with no recovery; px minimums used to keep it visible.",
+      "evidence": "Iteration-1 D-7 re-check: minimums are min(Npx, 100vw) / min(Npx, 100dvh); viewport units ignore the containing block."
+    },
+    {
+      "finding_id": null,
+      "decision": "applied",
+      "commit": "f429e620f894698dcd18f69245679fc2d4eabe68",
+      "source_file": "src/chat/ChatController.ts",
+      "claim_text": "silent checks only blocks.length === 0; blocks: [] with sources that render no markdown ends silently, though docs promise silence only with no sources.",
+      "evidence": "Iteration-1 D-8 re-check: same fix as F-8."
+    },
+    {
+      "finding_id": "D-1",
+      "decision": "applied",
+      "commit": "ea9750bb5cd4c61cb97a652cdf6bd8f725fd1ddf",
+      "original_severity": "minor",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "Restore cleanup dropped the storage.get(conversation) === saved check, so a failed restore can delete an ID another tab or widget sharing the storage key saved.",
+      "evidence": "Equality check restored alongside the activity and reset-key guards."
+    },
+    {
+      "finding_id": "D-2",
+      "decision": "applied",
+      "commit": "ea9750bb5cd4c61cb97a652cdf6bd8f725fd1ddf",
+      "original_severity": "minor",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "min(Npx, 100vw) paired with maxWidth 100% overflows the visible area by a classic scrollbar width when the viewport is narrower than the minimum.",
+      "evidence": "Minimums are min(Npx, max(100%, 50vw)) / min(Npx, max(100%, 50dvh)): equal to the old 100% cap in the normal case, with a viewport floor for a tiny transformed ancestor. Re-gate clean."
+    }
+  ],
+  "telemetry": {
+    "phase_1": {
+      "calls": 1,
+      "tokens": 164432,
+      "wall_clock_s": 677
+    }
+  },
+  "verification_evidence": {
+    "suite": "npm run check: exit 0; lint 0 errors (18 warnings in .prflow/tmp engine view copies only); typecheck ok; vitest 14 files, 191 passed, none skipped; builds ok",
+    "red_check": "5 new tests failed against c924df4 in a disposable worktree and pass at f429e62"
+  },
+  "phase3_failed_agents": [],
+  "diff_produced_at_head": "c924df4faa77c805f768f1646e66d8f69f575330",
+  "iteration_head": "ea9750bb5cd4c61cb97a652cdf6bd8f725fd1ddf",
+  "reference_reads": {
+    "fix_delta": {
+      "status": "verified",
+      "outcome": "refixed",
+      "reason": null
+    }
+  },
+  "phase3_findings": [
+    {
+      "finding_id": "F-1",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          391,
+          397
+        ],
+        "kind": "test_gap"
+      },
+      "carve_out": null,
+      "description": "No test checks that a History switch drops appended blocks (line 392 `if (!options.restore) appendedRef.current = [];`, also line 375 in the no-getConversation branch), though README line 75 and the appendBlocks TSDoc promise it; the only History test (ChatWidget.test.tsx 239-251) never calls appendBlocks.",
+      "agent": "prflow:pr-test-analyzer",
+      "corroboration_count": 2,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-2",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/mount.tsx",
+        "line_range": [
+          33,
+          47
+        ],
+        "kind": "leak"
+      },
+      "carve_out": null,
+      "description": "An appendBlocks call after unmount() queues the call and schedules flush, which finds no handle and reschedules itself every 10 ms forever; the call is dropped with no log. Pre-existing replay mechanism shared by every handle method, newly reachable through host-driven appendBlocks.",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-3",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          495,
+          498
+        ],
+        "kind": "api_misuse"
+      },
+      "carve_out": null,
+      "description": "appendBlocks silently drops malformed entries (null or no string type) from an array that also holds valid ones; the warning fires only when nothing renders.",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-4",
+      "severity": "important",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          228,
+          257
+        ],
+        "kind": "other"
+      },
+      "carve_out": null,
+      "description": "The PR bundles changes unrelated to appendBlocks against CONTRIBUTING.md line 20 (one concern per PR), none named in the PR description: viewport re-clamping (ChatWidget.tsx 228-257), CSS size caps (570-578), the react-chatbot-kit CommonJS interop unwrap (26, 52-56) and two viewport tests (ChatWidget.test.tsx 61-111).",
+      "agent": "prflow:requesting-code-review",
+      "corroboration_count": 1,
+      "fix_decision": "deferred"
+    },
+    {
+      "finding_id": "F-5",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          415,
+          418
+        ],
+        "kind": "test_gap"
+      },
+      "carve_out": null,
+      "description": "No test covers the guard that forgets the saved conversation ID only while storage still holds the one that failed (pending restore followed by a History switch).",
+      "agent": "prflow:pr-test-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-6",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          387,
+          395
+        ],
+        "kind": "test_gap"
+      },
+      "carve_out": null,
+      "description": "No test pins down that { blocks: [], sources: [...] } still renders its sources; dropping messages.length === 0 from the silent condition would pass every test.",
+      "agent": "prflow:pr-test-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-7",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          409,
+          415
+        ],
+        "kind": "logic_error"
+      },
+      "carve_out": null,
+      "description": "After a failed turn the composer gets the text back but not the attachments, so a retry from the refilled text silently sends without the files (README promises only the text).",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-8",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          391,
+          391
+        ],
+        "kind": "logic_error"
+      },
+      "carve_out": null,
+      "description": "A turn with blocks: [] and sources that all lack a title renders nothing and ends silently with no reply, apology or log, while the docs describe the silent case as an empty array with no sources.",
+      "agent": "prflow:silent-failure-hunter",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-9",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          389,
+          391
+        ],
+        "kind": "comment_drift"
+      },
+      "carve_out": null,
+      "inertness_cap": "important",
+      "description": "The silent-turn comment (ChatController.ts 389-390) and SendMessageResponse.blocks TSDoc (types.ts 110-114) name only the no-sources case, while non-empty sources that render nothing also end the turn silently.",
+      "agent": "prflow:requesting-code-review",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-10",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "README.md",
+        "line_range": [
+          75,
+          75
+        ],
+        "kind": "comment_drift"
+      },
+      "carve_out": null,
+      "inertness_cap": "important",
+      "description": "README line 75 says appended blocks stay when the saved conversation is restored without saying they live only in widget memory and are gone after a page reload.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-11",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/types.ts",
+        "line_range": [
+          302,
+          307
+        ],
+        "kind": "comment_drift"
+      },
+      "carve_out": null,
+      "inertness_cap": "important",
+      "description": "The ChatWidgetHandle.appendBlocks TSDoc does not say appended blocks exist only in the widget and are lost on reload.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-12",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          52,
+          55
+        ],
+        "kind": "documented_falsehood"
+      },
+      "carve_out": null,
+      "inertness_cap": "suggestion",
+      "description": "The kit-import comment's claim that under Vite the default import is the whole module.exports is probably wrong (Vite's interop returns .default when __esModule is set); unconfirmed from the repository.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-13",
+      "severity": "suggestion",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          416,
+          417
+        ],
+        "kind": "comment_drift"
+      },
+      "carve_out": null,
+      "inertness_cap": "suggestion",
+      "description": "The line 416 comment describes only the failed-load case, while ok is also false when the restore was abandoned by a reset.",
+      "agent": "prflow:comment-analyzer",
+      "corroboration_count": 1,
+      "fix_decision": "applied"
+    }
+  ],
+  "diff_profile": {
+    "small_diff": false,
+    "config_only": false,
+    "has_new_types": false,
+    "test_relevant": true,
+    "detect_all_audit": false,
+    "checklist_skipped": null,
+    "file_count": 8,
+    "changed_lines": 518
+  },
+  "phase3_dispatched": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "expected_reviewers": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "cap_drops": {
+    "count": 0,
+    "by_category": {}
+  },
+  "checklist": [
+    {
+      "id": "VC-1",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:kit-cjs-interop-comment:52",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-2",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:chatbot-default-unwrap:56",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-3",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:kit-setstate-bound-before-ref:504",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-4",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:refill-updates-kit-state:348",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-5",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:never-overwrite-typing:349",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-6",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:emulated-never-second-resize:237",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-7",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:reclamp-during-resize-gesture:255",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-8",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:css-viewport-caps:570",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-9",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:storage-get-saved-compare:417",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-10",
+      "claim_signature": "api_contract:ChatController.ts:typed-flag-callers:249",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-11",
+      "claim_signature": "api_contract:ChatController.ts:onturnfailed-doc:77",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-12",
+      "claim_signature": "api_contract:types.ts:empty-blocks-silent-doc:111",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-13",
+      "claim_signature": "api_contract:types.ts:appendblocks-doc:303",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-14",
+      "claim_signature": "api_contract:README.md:appendblocks-readme:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-15",
+      "claim_signature": "api_contract:README.md:refill-on-failure-readme:120",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-16",
+      "claim_signature": "api_contract:README.md:empty-blocks-silent-readme:120",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-17",
+      "claim_signature": "absolute_claim:README.md:error-details-never-shown:120",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-18",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:bot-bubble-selector:388",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-19",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:kit-clears-input-on-submit:485",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-27",
+      "claim_signature": "api_contract:mount.tsx:queued-append-order:56",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": true,
+      "verdict": "PASS",
+      "severity": "important",
+      "reused_from_iter": 1
+    }
+  ],
+  "fix_files": [
+    "README.md",
+    "src/chat/ChatController.test.ts",
+    "src/chat/ChatController.ts",
+    "src/mount.test.tsx",
+    "src/mount.tsx",
+    "src/types.ts",
+    "src/widget/ChatWidget.test.tsx",
+    "src/widget/ChatWidget.tsx"
+  ],
+  "synthesized": false
+}

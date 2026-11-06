@@ -1,0 +1,449 @@
+{
+ "dispatch_mode": "fanned-out",
+ "root_completeness": "established",
+ "phase3_findings": [
+  {
+   "agent": "prflow:pr-test-analyzer",
+   "severity": "suggestion",
+   "description": "No test appends while the widget is closed after it has been opened; the Chatbot stays mounted but hidden, so the append goes through controller.addMessages, and a change routing on isOpen instead of on a mounted Chatbot would silently lose those appends with every test still passing.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.tsx",
+    "line_range": [
+     498,
+     520
+    ],
+    "kind": "test_gap"
+   }
+  },
+  {
+   "agent": "prflow:pr-test-analyzer",
+   "severity": "suggestion",
+   "description": "The two guards on staging a failed turn's attachments again are untested: the composer not being refilled (refilled false) and the user staging new files during the failed turn (stagedAttachments.length === 0).",
+   "defect_signature": {
+    "file": "src/chat/ChatController.ts",
+    "line_range": [
+     418,
+     423
+    ],
+    "kind": "test_gap"
+   }
+  },
+  {
+   "agent": "prflow:pr-test-analyzer",
+   "severity": "suggestion",
+   "description": "No test reaches the History-switch branch for a data source with listConversations but no getConversation, which also clears appendedRef.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.tsx",
+    "line_range": [
+     376,
+     381
+    ],
+    "kind": "test_gap"
+   }
+  },
+  {
+   "agent": "prflow:pr-test-analyzer",
+   "severity": "suggestion",
+   "description": "The mount test never confirms the appendBlocks call was queued (a pending timer) before unmount(), so a synchronously attached handle would let it pass without exercising the if (unmounted) return guard in flush.",
+   "defect_signature": {
+    "file": "src/mount.test.tsx",
+    "line_range": [
+     15,
+     19
+    ],
+    "kind": "test_gap"
+   }
+  },
+  {
+   "agent": "prflow:comment-analyzer",
+   "severity": "suggestion",
+   "description": "README line 120 says the typed text goes back into the empty input when sendMessage rejects, but a typed slash command whose run calls ctx.send is not refilled: sendTurn(text, { echo: true }) at ChatController.ts 295 passes no typed, so onTurnFailed never runs (the test 'does not report text a command sent as a failed turn' pins this).",
+   "defect_signature": {
+    "file": "README.md",
+    "line_range": [
+     120,
+     120
+    ],
+    "kind": "documented_falsehood"
+   }
+  },
+  {
+   "agent": "prflow:comment-analyzer",
+   "severity": "suggestion",
+   "description": "The ControllerHost.onTurnFailed TSDoc says returning true means the attachments are staged again, but the code restages them only when the user has not staged new ones (line 420, this.stagedAttachments.length === 0).",
+   "defect_signature": {
+    "file": "src/chat/ChatController.ts",
+    "line_range": [
+     77,
+     80
+    ],
+    "kind": "comment_drift"
+   }
+  },
+  {
+   "agent": "prflow:comment-analyzer",
+   "severity": "suggestion",
+   "description": "Added test comments in ChatWidget.test.tsx (lines 73-75, 80, 81, 105-106, 109) are worked arithmetic or background about mobile viewports rather than reasons.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.test.tsx",
+    "line_range": [
+     73,
+     109
+    ],
+    "kind": "style"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "important",
+   "description": "appendBlocks adds an empty avatar row with no console output when a block has a string type nothing renders (a typo against a registered custom type, a missing blockRenderers entry, or a table without headers/rows): answerToMessages keeps it, BlockRenderer returns null (BlockRenderer.tsx 110-111), and no warning fires, so a host's dropped card gives no signal.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.tsx",
+    "line_range": [
+     508,
+     520
+    ],
+    "kind": "logic_error"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "important",
+   "description": "A ChatWidgetHandle kept after the React widget unmounts drops appendBlocks calls silently: mountedResetKeyRef keeps its last value (the layout effect at 498-500 has no cleanup), so the call goes to controller.addMessages, which calls the unmounted kit's setState and never checks disposed (ChatController.ts 201-208); the mount() wrapper warns for the same misuse.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.tsx",
+    "line_range": [
+     519,
+     519
+    ],
+    "kind": "logic_error"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "suggestion",
+   "description": "The SendMessageResponse.blocks TSDoc says any other answer that shows nothing gets an apology, but an answer whose only block has a type with no renderer, or a malformed built-in block, shows nothing and gets no apology (messages.length > 0 at ChatController.ts 397-401).",
+   "defect_signature": {
+    "file": "src/types.ts",
+    "line_range": [
+     113,
+     114
+    ],
+    "kind": "documented_falsehood"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "suggestion",
+   "description": "A silent turn (blocks: [] with no sources) ends with no reply and no console line, so a backend returning an empty array on an internal failure looks like an ignored question with no trace for the developer; documented behavior, a diagnostic gap.",
+   "defect_signature": {
+    "file": "src/chat/ChatController.ts",
+    "line_range": [
+     397,
+     401
+    ],
+    "kind": "other"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "suggestion",
+   "description": "When ChatWidget throws during its first render, ref.current stays null and mount()'s flush reschedules every 10 ms indefinitely while later handle calls, appendBlocks included, pile up in queued with no warning.",
+   "defect_signature": {
+    "file": "src/mount.tsx",
+    "line_range": [
+     45,
+     53
+    ],
+    "kind": "leak"
+   }
+  },
+  {
+   "agent": "prflow:requesting-code-review",
+   "severity": "suggestion",
+   "description": "README line 120 says a failed turn's typed text always goes back into the empty input, which does not happen for a typed slash command whose run calls ctx.send (sendTurn(text, { echo: true }) at ChatController.ts 295 never passes typed).",
+   "defect_signature": {
+    "file": "README.md",
+    "line_range": [
+     120,
+     120
+    ],
+    "kind": "documented_falsehood"
+   }
+  },
+  {
+   "agent": "prflow:requesting-code-review",
+   "severity": "suggestion",
+   "description": "AttachmentPicker.tsx line 90 still says the listener clears chips when the controller takes the attachments, but the listener now also restores a failed turn's attachments (ChatController.ts 420-423); the matching onAttachmentsReset TSDoc was updated, this comment was not.",
+   "defect_signature": {
+    "file": "src/attachments/AttachmentPicker.tsx",
+    "line_range": [
+     90,
+     97
+    ],
+    "kind": "comment_drift"
+   }
+  },
+  {
+   "agent": "prflow:requesting-code-review",
+   "severity": "suggestion",
+   "description": "No test checks that mount()'s appendBlocks reaches the widget, either replayed from the queue or forwarded after the ref attaches; mount.test.tsx covers only the after-unmount path, so wiring it to the wrong method would pass every test.",
+   "defect_signature": {
+    "file": "src/mount.tsx",
+    "line_range": [
+     63,
+     63
+    ],
+    "kind": "test_gap"
+   }
+  }
+ ],
+ "phase3_dispatched": [
+  "prflow:code-reviewer",
+  "prflow:silent-failure-hunter",
+  "prflow:comment-analyzer",
+  "prflow:requesting-code-review",
+  "prflow:pr-test-analyzer"
+ ],
+ "expected_reviewers": [
+  "prflow:code-reviewer",
+  "prflow:silent-failure-hunter",
+  "prflow:comment-analyzer",
+  "prflow:requesting-code-review",
+  "prflow:pr-test-analyzer"
+ ],
+ "plan_eligible": [
+  "prflow:code-reviewer",
+  "prflow:silent-failure-hunter",
+  "prflow:comment-analyzer",
+  "prflow:requesting-code-review",
+  "prflow:pr-test-analyzer"
+ ],
+ "plan_exclusions": [],
+ "phase3_failed_agents": [],
+ "diff_profile": {
+  "small_diff": false,
+  "config_only": false,
+  "has_new_types": false,
+  "test_relevant": true,
+  "detect_all_audit": false,
+  "checklist_skipped": null,
+  "file_count": 9,
+  "changed_lines": 664
+ },
+ "cap_drops": {
+  "count": 0,
+  "by_category": {}
+ },
+ "acceptance_criteria": "",
+ "phase4_demoted": [],
+ "reject_drivers": [],
+ "criterion_exempt": [],
+ "verdict": "APPROVE with notes",
+ "report": "## Verdict: APPROVE with notes (no Critical findings; 2 Important findings and 13 Suggestion items sit below the critical threshold; 4 checklist items inconclusive)\n\nThe PR can merge: no finding or checklist failure reaches the configured critical threshold, and every fix from the earlier rounds is in place at this head, though two Important silent-drop gaps in `appendBlocks` are worth a look.\nRule applied: rule 6 — findings below the threshold and inconclusive checklist items remain → APPROVE with notes\n\n## Code Review Findings\n\n### 🟠 Important / Major\n\n1. `src/widget/ChatWidget.tsx` lines 508-520: `appendBlocks` adds an empty avatar row with no console output when a block has a string `type` that nothing renders, such as a typo like `raddy_card` for a registered `raddy-card`, a missing `blockRenderers` entry, or `{ type: 'table' }` without `headers` or `rows`. The blank-text and typeless-block warnings do not catch this case, `answerToMessages` (`src/chat/ChatController.ts` 148-155) keeps the block, and `BlockRenderer` returns `null` for it (`src/blocks/BlockRenderer.tsx` 110-111). This is the main path for host cards, so the host gets no signal when a card is dropped. (raised by 1/5 agents)\n2. `src/widget/ChatWidget.tsx` line 519, with `src/chat/ChatController.ts` lines 201-208: a `ChatWidgetHandle` kept after the React widget unmounts drops `appendBlocks` calls without a warning. `mountedResetKeyRef` keeps its last value because the layout effect at 498-500 has no cleanup, so the call goes to `controller.addMessages`, which calls the unmounted kit's `setState` and never checks `disposed`. The `mount()` wrapper warns for the same misuse (`src/mount.tsx` 36-38), so the two embeddings report it differently. (raised by 1/5 agents)\n\n### 🟡 Suggestion / Minor (13)\n\n<details><summary>13 items</summary>\n\n1. `README.md` line 120 says that when `sendMessage` rejects and the input is empty, \"the text the user typed goes back into it\". This is false for a typed slash command whose `run` calls `ctx.send(...)`: `sendTurn(text, { echo: true })` at `src/chat/ChatController.ts` 295 passes no `typed`, so `onTurnFailed` never runs, and the test \"does not report text a command sent as a failed turn\" (`src/chat/ChatController.test.ts` 233-248) pins that behavior. (raised by 2/5 agents) <!-- inertness: first-conjunct=held limb-one=held limb-two=not-held; evidence: mechanism under discussion is ChatController.performTurn's onTurnFailed refill, which runs only for typed turns; scoping the README sentence changes no output, branch or covered set; grep of the head view for \"goes back into it\" printed only README.md:120, and the only file naming README is package.json line 31 (the npm \"files\" list, a publishing list, not a behavior reader); README is published, so limb two fails and the cap is Important, weighed at the original Suggestion -->\n2. `src/widget/ChatWidget.tsx` lines 498-520: no test appends while the widget is closed after it has been opened. After the first open the Chatbot stays mounted but hidden, so the append goes through `controller.addMessages`; a change that routed on `isOpen` instead of on whether a Chatbot is mounted would lose those appends and every current test would still pass. (raised by 1/5 agents)\n3. `src/chat/ChatController.ts` lines 418-423: the two guards on staging a failed turn's attachments again are untested, namely the composer not being refilled and the user staging new files during the failed turn. (raised by 1/5 agents)\n4. `src/widget/ChatWidget.tsx` lines 376-381: no test reaches the History-switch branch for a data source with `listConversations` but no `getConversation`, which also clears `appendedRef`. (raised by 1/5 agents)\n5. `src/mount.test.tsx` lines 15-19: the mount test never confirms the call was queued (a pending timer) before `unmount()`, so a handle that attached synchronously would make the test pass without exercising the `if (unmounted) return` guard. (raised by 1/5 agents)\n6. `src/mount.tsx` line 63: no test checks that `mount()`'s `appendBlocks` reaches the widget, either replayed from the queue or forwarded after the ref attaches; wiring it to the wrong method would pass every test. This is the entry point for non-React hosts, including the standalone build. (raised by 1/5 agents)\n7. `src/chat/ChatController.ts` lines 77-80: the `ControllerHost.onTurnFailed` TSDoc says returning true means \"its attachments are staged again\", but the code stages them again only when the user has not staged new ones (line 420, `this.stagedAttachments.length === 0`). (raised by 1/5 agents) <!-- inertness: first-conjunct=held limb-one=held limb-two=held; evidence: mechanism under discussion is the attachment re-stage guard in performTurn, which the sentence describes without its stagedAttachments condition; completing the sentence changes no output; grep of the head view for \"staged again\" printed only src/chat/ChatController.ts:79; the TSDoc is a source comment the program never prints -->\n8. `src/types.ts` lines 113-114: the `SendMessageResponse.blocks` TSDoc says any other answer that shows nothing gets an apology, but an answer whose only block has a type with no renderer, or a malformed built-in block, shows nothing and gets no apology (`messages.length > 0` at `src/chat/ChatController.ts` 397-401; the renderer returns `null`). (raised by 1/5 agents) <!-- inertness: first-conjunct=held limb-one=held limb-two=held; evidence: mechanism under discussion is performTurn's silent/apology choice, which apologizes when answerToMessages yields no messages (blank text, typeless blocks, untitled sources), ends silently for blocks [] with no sources, and otherwise renders, with BlockRenderer returning null for types without a renderer (unchanged from the base); narrowing the sentence to the listed cases changes no output; grep of the head view for \"gets an apology\" printed only src/types.ts:114; the TSDoc ships in installed type declarations the program never prints -->\n9. `src/attachments/AttachmentPicker.tsx` lines 90-97: the comment \"Clear chips when the controller takes the attachments for a message\" no longer covers what the listener does, since it now also restores a failed turn's attachments; the matching `onAttachmentsReset` TSDoc was updated, this comment was not. (raised by 1/5 agents)\n10. `src/chat/ChatController.ts` lines 397-401: a silent turn (`blocks: []` with no sources) now ends with no reply and no console line, so a backend that returns an empty array on an internal failure looks like an ignored question and leaves no trace to debug. The behavior is documented. (raised by 1/5 agents)\n11. `src/mount.tsx` lines 45-53: when `ChatWidget` throws during its first render, `ref.current` stays null and `flush` reschedules itself every 10 ms indefinitely, while later handle calls pile up in `queued` with no warning. (raised by 1/5 agents)\n12. `src/widget/ChatWidget.test.tsx` lines 73-109: several added test comments are worked arithmetic or background about mobile viewports rather than reasons. (raised by 1/5 agents)\n- VC-8: FAIL (suggestion) — The SendMessageResponse.blocks TSDoc asserts that every answer other than an empty blocks array with no sources that shows nothing (only blank text, blocks without a type, or sources without a title) gets an apology. [src/types.ts:110]\n\n  <details><summary>Evidence</summary>\n\n  types.ts:110-115 says any other answer that shows nothing gets an apology. Counterexample: sendMessage returns { blocks: [{ type: 'unknown-x' }] } with no matching blockRenderers. answerToMessages (ChatController.ts:136-155) keeps the block, since its type is a string. isPlainText is false, so it returns one non-empty BLOCKS_MESSAGE. performTurn (ChatController.ts:393-401) then sees messages.length > 0 and shows no apology. BlockRenderer.tsx:110-111 returns null for a type with no custom renderer (the file header says it is 'ignored when no renderer exists'). The user sees an empty blocks container and no apology. The same happens for a block with an unknown type plus an empty-text labelled block. So the absolute claim is false, and the TSDoc over-promises. The text only lists blank text, typeless blocks and untitled sources, and omits unrendered unknown types.\n\n  </details>\n\n</details>\n\n### ℹ️ Informational — Deferred (4)\n\n<details><summary>4 items</summary>\n\n- VC-1: INCONCLUSIVE (suggestion) — The default import of react-chatbot-kit is either the Chatbot component itself or the module.exports object carrying the component as a `Chatbot` property, so `(chatbotKit as { Chatbot? }).Chatbot ?? chatbotKit` yields the Chatbot component in both cases (and the test/build interop each resolve to one of them). [src/widget/ChatWidget.tsx:57]\n\n  <details><summary>Evidence</summary>\n\n  src/widget/ChatWidget.tsx:57 has the unwrap `(chatbotKit as { Chatbot?: typeof chatbotKit }).Chatbot ?? chatbotKit`. The claim depends on react-chatbot-kit's build/index.js exports and package.json entry points. The item has no dependency_sources. A Glob of the head view for **/react-chatbot-kit/** found nothing, and node_modules is untracked, so the library source is not in the views. I did not read the working-tree node_modules, as the rules forbid it. Not run or read: node_modules/react-chatbot-kit/package.json and build/index.js from a provided source directory.\n\n  </details>\n\n- VC-2: INCONCLUSIVE (suggestion) — The comment asserts that importing `{ Chatbot }` by name fails under Node ESM because Node cannot see react-chatbot-kit's named exports. [src/widget/ChatWidget.tsx:52]\n\n  <details><summary>Evidence</summary>\n\n  The comment at src/widget/ChatWidget.tsx:52-57 claims a named `{ Chatbot }` import fails under Node ESM because Node cannot see the kit's named exports. Settling that needs react-chatbot-kit/build/index.js as cjs-module-lexer sees it. The item has no dependency_sources, and the head view's inventory.json has no react-chatbot-kit entry (node_modules is untracked). I did not read the working-tree copy, which is not an allowed source. I also did not run Node against the kit, so the claim is neither confirmed nor refuted. The code at line 57 does unwrap defensively with `.Chatbot ?? chatbotKit`.\n\n  </details>\n\n- VC-14: INCONCLUSIVE (suggestion) — The comment asserts that emulated mobile viewports never fire a second resize event after settling to their final size. [src/widget/ChatWidget.tsx:238]\n\n  <details><summary>Evidence</summary>\n\n  src/widget/ChatWidget.tsx:238-241 says mobile viewports can settle after the window's resize event fired, and that emulated ones never fire a second one. The code only registers keepInsideViewport on window 'resize' and visualViewport 'resize' (242-250), plus an isOpen re-clamp (256-258). Those handlers behave correctly whether or not a second window resize fires. ChatWidget.test.tsx:73-108 only simulates a visual-viewport-only resize. Nothing in the repo (tests, docs) establishes or contradicts the 'never' about browser device emulation. That is external browser behavior, so I can neither confirm it nor produce a counterexample by reading. The wording is an unscoped absolute, but it is comment-only and has no code effect. Missing evidence: a run of Chrome DevTools device emulation that logs window resize events.\n\n  </details>\n\n- VC-17: INCONCLUSIVE (suggestion) — Under CHANGELOG.md's own rule that all notable changes are documented, the Unreleased Added list records the public behaviors this diff introduces: the appendBlocks handle method (listed) and the data-source contract that `blocks: []` with no sources ends a turn silently, plus the failed-turn composer refill with attachments. [CHANGELOG.md:17]\n\n  <details><summary>Evidence</summary>\n\n  CHANGELOG.md:17 lists appendBlocks in the handle bullet. Nothing in the Unreleased Added list (CHANGELOG.md:10-19) mentions that `blocks: []` with no sources ends a turn silently, or the failed-turn composer refill with attachments. Both are new in this diff: README.md:120 gains both sentences, and the diff adds refill code (onTurnFailed, attachments restore). So the claim as worded does not hold. The only source that requires the changelog to cover them is CHANGELOG.md:3, the subject's own file, which FAIL may not quote. CONTRIBUTING.md:45 only says maintainers update the changelog at release. No other repository rule, doc or caller requires per-change entries (grep for 'changelog' over the head view found only package.json, CONTRIBUTING.md and CHANGELOG.md). The Unreleased section is also described as the first public version (CHANGELOG.md:7), so folding these under existing bullets is arguably acceptable. I cannot show a requirement broken, and I cannot show that no source requires it.\n\n  </details>\n\n</details>\n\n## Issue Compliance\n\nNo related issue found — requirement compliance not checked.\n\n## Run details\n\n<details><summary>Run details</summary>\n\n- Diff profile: test_relevant, 9 changed files (664 changed lines); full checklist (Phase 1 and 2) ran.\n- Phase 0 working tree: check skipped (pull-request mode, reviewing the checked-out head).\n- Review prompt extension: PROMPT-EXTENSION-STATUS present-empty. Final-pass reviewer extension (requesting-code-review): present-empty.\n- CI evidence for the reviewed head: missing; no CI results were provided and no in-environment test suite result is held for this head.\n- Normalized (wording-only): 1\n- Re-verification: none requested.\n- Verdict severity threshold: critical (config value printed).\n- Phase 3 agents returned: 5 of 5; none failed. Dirty-tree check: clean.\n- Inertness cap applied to three prose findings (README line 120, `ControllerHost.onTurnFailed` TSDoc, `SendMessageResponse.blocks` TSDoc); being capped, they sit outside the self-contradicting-diff carve-out.\n- No related issue found — requirement compliance not checked.\n- prior-report: none\n- Checklist: 12 passed, 1 failed, 4 inconclusive\n- <details><summary>✅ Passed items (12 of 17)</summary>\n\n  - VC-3: Once a Chatbot keyed with the latest requested reset key has committed (mountedResetKeyRef set in the parent's useLayoutEffect equals requestedResetKeyRef), react-chatbot-kit has already constructed that instance's ActionProvider with its real setState, so controller.addMessages reaches the newly mounted transcript; if the kit binds later (e.g. in a passive effect), an append in that window goes to a null setState (dropped by update's `setState?.`) or to the previous, unmounted instance. [src/widget/ChatWidget.tsx:496]\n  - VC-4: react-chatbot-kit seeds its message state from config.initialMessages when a Chatbot mounts, so appends buffered through setInitialMessages appear on the next mount, and a changed initialMessages/config on an already mounted Chatbot does not reset or duplicate its live transcript. [src/widget/ChatWidget.tsx:520]\n  - VC-5: The test counts transcript bubbles with `.react-chatbot-kit-chat-bot-message`, assuming react-chatbot-kit renders each `bot`-type message (as produced by botMessage/answerToMessages for plain text) inside an element with that class under this widget's chat config; if the config replaces the bot message component, the count is always 0 and the 'no new bubble' assertion passes vacuously. [src/widget/ChatWidget.test.tsx:388]\n  - VC-6: With only setTimeout faked, the mount test assumes React's createRoot().render under the jsdom test environment schedules its work without setTimeout (so ref.current is still null right after mount(), the appendBlocks call is queued, and after unmount() and advancing 100 ms no faked setTimeout timer remains for getTimerCount to report). [src/mount.test.tsx:310]\n  - VC-7: The appendBlocks and History tests that write `radchat:conversation` into localStorage ('saved-1', 'demo-conversation-2') rely on the test setup clearing localStorage between tests, so later tests rendering with the default storage key do not try to restore those IDs. [src/widget/ChatWidget.test.tsx:448]\n  - VC-9: NORMALIZED (wording-only) — createFetchDataSource passes the backend's `blocks` through as-is (absent stays absent), so a backend that omits `blocks` still gets the apology bubble, while only an explicit `blocks: []` with no sources ends the turn silently; if the fetch data source normalizes a missing `blocks` to `[]`, a backend that forgets `blocks` gets a silent turn instead. [src/chat/ChatController.ts:393]\n  - VC-10: performTurn assumes `response.sources` from the data source is an array or absent: for an empty array or absence it may end silently, for a non-empty array it renders sources or apologizes; a non-array truthy value with a `length` (e.g. a string) makes the turn non-silent and is passed on to answerToMessages/sourcesToMarkdown. [src/chat/ChatController.ts:397]\n  - VC-11: The README states that when sendMessage rejects and the input is empty, the text the user typed goes back into the input, with its attachments unless new ones are staged (the sentence also covers the safe error message and formatError). [README.md:120]\n  - VC-12: The ChatWidgetHandle.appendBlocks TSDoc states that blocks appended before the widget first opens appear when it opens, that appended blocks stay when the saved conversation is restored, that a new conversation or a History switch drops them, and that they live only in the widget so a page reload loses them. [src/types.ts:303]\n  - VC-13: The README states that appended blocks stay when the saved conversation is restored and are dropped by a new conversation or a History switch (the paragraph also covers buffering before first open and loss on reload). [README.md:75]\n  - VC-15: The comment asserts that in CSS a min size wins over a max size, which is why the inline minWidth/minHeight are capped at 100%. [src/widget/ChatWidget.tsx:585]\n  - VC-16: The floating window's inline minWidth/minHeight use CSS min()/max() with vw and dvh units: in an engine that accepts them, the minimums are capped by the containing block with a 50vw/50dvh floor; in an engine that rejects a value (e.g. no dvh support), that declaration is dropped and the window has no min-height (or min-width) constraint at all rather than the former fixed pixel minimum. [src/widget/ChatWidget.tsx:591]\n\n  </details>\n\n</details>\n",
+ "diff_produced_at_head": "ea9750bb5cd4c61cb97a652cdf6bd8f725fd1ddf",
+ "checklist": [
+  {
+   "id": "VC-1",
+   "category": "dependency_interaction",
+   "claim": "The default import of react-chatbot-kit is either the Chatbot component itself or the module.exports object carrying the component as a `Chatbot` property, so `(chatbotKit as { Chatbot? }).Chatbot ?? chatbotKit` yields the Chatbot component in both cases (and the test/build interop each resolve to one of them).",
+   "claim_provenance": "generated_paraphrase",
+   "source_file": "src/widget/ChatWidget.tsx",
+   "source_line": 57,
+   "verify_against": "react-chatbot-kit package entry points (node_modules/react-chatbot-kit/package.json main/module/exports and build/index.js)",
+   "verify_hint": "Check how node_modules/react-chatbot-kit/build/index.js assigns its exports (exports.default vs exports.Chatbot, __esModule flag) and which entry package.json points the bundler and Node at; confirm `.Chatbot` exists on the namespace object when the default import is the whole module.exports.",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:chatbot-kit-default-unwrap:57",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "src/widget/ChatWidget.tsx:57 has the unwrap `(chatbotKit as { Chatbot?: typeof chatbotKit }).Chatbot ?? chatbotKit`. The claim depends on react-chatbot-kit's build/index.js exports and package.json entry points. The item has no dependency_sources. A Glob of the head view for **/react-chatbot-kit/** found nothing, and node_modules is untracked, so the library source is not in the views. I did not read the working-tree node_modules, as the rules forbid it. Not run or read: node_modules/react-chatbot-kit/package.json and build/index.js from a provided source directory.",
+   "file_checked": "src/widget/ChatWidget.tsx:57",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-2",
+   "category": "absolute_claim",
+   "claim": "The comment asserts that importing `{ Chatbot }` by name fails under Node ESM because Node cannot see react-chatbot-kit's named exports.",
+   "claim_provenance": "source_authored",
+   "source_excerpt": "`{ Chatbot }` by name fails under Node ESM, which can't see the kit's named",
+   "source_file": "src/widget/ChatWidget.tsx",
+   "source_line": 52,
+   "source_line_end": 56,
+   "verify_against": "node_modules/react-chatbot-kit/build/index.js export assignments as seen by Node's CommonJS named-export detection (cjs-module-lexer)",
+   "verify_hint": "Trace the falsifying input: a build/index.js that assigns `exports.Chatbot = ...` (or `Object.defineProperty(exports, 'Chatbot', ...)`) in a form Node's static lexer detects would make `import { Chatbot } from 'react-chatbot-kit'` succeed under Node ESM. Inspect how the kit's build emits its exports (webpack/UMD wrapper vs plain assignments).",
+   "claim_signature": "absolute_claim:ChatWidget.tsx:node-esm-named-import-fails:52",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "The comment at src/widget/ChatWidget.tsx:52-57 claims a named `{ Chatbot }` import fails under Node ESM because Node cannot see the kit's named exports. Settling that needs react-chatbot-kit/build/index.js as cjs-module-lexer sees it. The item has no dependency_sources, and the head view's inventory.json has no react-chatbot-kit entry (node_modules is untracked). I did not read the working-tree copy, which is not an allowed source. I also did not run Node against the kit, so the claim is neither confirmed nor refuted. The code at line 57 does unwrap defensively with `.Chatbot ?? chatbotKit`.",
+   "file_checked": "src/widget/ChatWidget.tsx:52-57",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-3",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:kit-binds-before-mounted-key:519",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-4",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:initial-messages-seed-mount:520",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-5",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:bot-message-class-count:388",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-6",
+   "claim_signature": "test_mock_alignment:mount.test.tsx:react-scheduler-not-settimeout:310",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-7",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:localstorage-cleared-between-tests:448",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-8",
+   "category": "absolute_claim",
+   "claim": "The SendMessageResponse.blocks TSDoc asserts that every answer other than an empty blocks array with no sources that shows nothing (only blank text, blocks without a type, or sources without a title) gets an apology.",
+   "claim_provenance": "source_authored",
+   "source_excerpt": "Any other answer that shows nothing (only\n   * blank text, blocks without a type, or sources without a title) gets an apology.",
+   "source_file": "src/types.ts",
+   "source_line": 110,
+   "source_line_end": 116,
+   "verify_against": "answerToMessages and the silent/apology logic in ChatController.performTurn (src/chat/ChatController.ts), plus how BlockRenderer handles unknown types (src/blocks/BlockRenderer.tsx)",
+   "verify_hint": "Trace the falsifying inputs `{ blocks: [{ type: 'unknown-x' }] }` with no matching blockRenderers, and `{ blocks: [{ type: 'text', content: '', label: 'SQL' }] }`: answerToMessages returns a non-empty BLOCKS_MESSAGE, so performTurn shows no apology; check whether BlockRenderer then renders anything visible for them.",
+   "claim_signature": "absolute_claim:types.ts:empty-answer-gets-apology:110",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "FAIL",
+   "raw_verdict": "FAIL",
+   "normalized": false,
+   "evidence": "types.ts:110-115 says any other answer that shows nothing gets an apology. Counterexample: sendMessage returns { blocks: [{ type: 'unknown-x' }] } with no matching blockRenderers. answerToMessages (ChatController.ts:136-155) keeps the block, since its type is a string. isPlainText is false, so it returns one non-empty BLOCKS_MESSAGE. performTurn (ChatController.ts:393-401) then sees messages.length > 0 and shows no apology. BlockRenderer.tsx:110-111 returns null for a type with no custom renderer (the file header says it is 'ignored when no renderer exists'). The user sees an empty blocks container and no apology. The same happens for a block with an unknown type plus an empty-text labelled block. So the absolute claim is false, and the TSDoc over-promises. The text only lists blank text, typeless blocks and untitled sources, and omits unrendered unknown types.",
+   "file_checked": "src/types.ts:110-115",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-9",
+   "claim_signature": "api_contract:ChatController.ts:fetch-missing-blocks-not-silent:393",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-10",
+   "claim_signature": "data_format_assumption:ChatController.ts:sources-array-or-absent:397",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-11",
+   "claim_signature": "api_contract:README.md:failed-turn-refill-attachments:120",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-12",
+   "claim_signature": "api_contract:types.ts:appended-blocks-lifecycle:303",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-13",
+   "claim_signature": "api_contract:README.md:appended-blocks-lifecycle:75",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-14",
+   "category": "absolute_claim",
+   "claim": "The comment asserts that emulated mobile viewports never fire a second resize event after settling to their final size.",
+   "claim_provenance": "source_authored",
+   "source_excerpt": "(emulated ones never fire a second one).",
+   "source_file": "src/widget/ChatWidget.tsx",
+   "source_line": 238,
+   "source_line_end": 241,
+   "verify_against": "Browser device-emulation behavior as described by the code's comments and tests (ChatWidget.test.tsx 're-clamps when only the visual viewport resizes')",
+   "verify_hint": "Trace the falsifying input: a DevTools device-emulation toggle in which the layout viewport settles and the window emits a second `resize` event; check whether the comment's 'never' is backed by anything in the repo (tests, docs) or should be scoped.",
+   "claim_signature": "absolute_claim:ChatWidget.tsx:emulated-viewport-no-second-resize:241",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "src/widget/ChatWidget.tsx:238-241 says mobile viewports can settle after the window's resize event fired, and that emulated ones never fire a second one. The code only registers keepInsideViewport on window 'resize' and visualViewport 'resize' (242-250), plus an isOpen re-clamp (256-258). Those handlers behave correctly whether or not a second window resize fires. ChatWidget.test.tsx:73-108 only simulates a visual-viewport-only resize. Nothing in the repo (tests, docs) establishes or contradicts the 'never' about browser device emulation. That is external browser behavior, so I can neither confirm it nor produce a counterexample by reading. The wording is an unscoped absolute, but it is comment-only and has no code effect. Missing evidence: a run of Chrome DevTools device emulation that logs window resize events.",
+   "file_checked": "src/widget/ChatWidget.tsx:238-241",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-15",
+   "claim_signature": "absolute_claim:ChatWidget.tsx:min-size-wins-over-max:588",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-16",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:dvh-css-math-support:591",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-17",
+   "category": "api_contract",
+   "claim": "Under CHANGELOG.md's own rule that all notable changes are documented, the Unreleased Added list records the public behaviors this diff introduces: the appendBlocks handle method (listed) and the data-source contract that `blocks: []` with no sources ends a turn silently, plus the failed-turn composer refill with attachments.",
+   "claim_provenance": "generated_paraphrase",
+   "source_file": "CHANGELOG.md",
+   "source_line": 17,
+   "verify_against": "CHANGELOG.md line 3 ('All notable changes to RadChat will be documented here') and the SendMessageResponse.blocks TSDoc in src/types.ts / README.md line 120",
+   "verify_hint": "Compare the Added bullets under [Unreleased] in CHANGELOG.md with the new behaviors documented in README.md line 120 and src/types.ts SendMessageResponse.blocks.",
+   "claim_signature": "api_contract:CHANGELOG.md:changelog-covers-new-behavior",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "CHANGELOG.md:17 lists appendBlocks in the handle bullet. Nothing in the Unreleased Added list (CHANGELOG.md:10-19) mentions that `blocks: []` with no sources ends a turn silently, or the failed-turn composer refill with attachments. Both are new in this diff: README.md:120 gains both sentences, and the diff adds refill code (onTurnFailed, attachments restore). So the claim as worded does not hold. The only source that requires the changelog to cover them is CHANGELOG.md:3, the subject's own file, which FAIL may not quote. CONTRIBUTING.md:45 only says maintainers update the changelog at release. No other repository rule, doc or caller requires per-change entries (grep for 'changelog' over the head view found only package.json, CONTRIBUTING.md and CHANGELOG.md). The Unreleased section is also described as the first public version (CHANGELOG.md:7), so folding these under existing bullets is arguably acceptable. I cannot show a requirement broken, and I cannot show that no source requires it.",
+   "file_checked": "CHANGELOG.md:3-17",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  }
+ ]
+}

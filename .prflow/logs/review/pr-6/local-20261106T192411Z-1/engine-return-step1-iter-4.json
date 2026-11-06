@@ -1,0 +1,621 @@
+{
+ "dispatch_mode": "fanned-out",
+ "root_completeness": "established",
+ "phase3_findings": [
+  {
+   "agent": "prflow:pr-test-analyzer",
+   "severity": "suggestion",
+   "description": "No test sends a failing slash command through the typed input path: handleUserInput passes { typed: true } to runCommandInput at line 249, but the controller tests call runCommandInput directly and the widget's failed-turn tests send only plain text, so dropping the flag would stop refilling a failed typed command with every test still passing.",
+   "defect_signature": {
+    "file": "src/chat/ChatController.ts",
+    "line_range": [
+     249,
+     249
+    ],
+    "kind": "test_gap"
+   }
+  },
+  {
+   "agent": "prflow:pr-test-analyzer",
+   "severity": "suggestion",
+   "description": "The guard that keeps a saved conversation ID another tab or widget stored while a failed restore was pending is untested: no test changes the stored conversation value during a pending restore and then lets the restore fail.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.tsx",
+    "line_range": [
+     424,
+     431
+    ],
+    "kind": "test_gap"
+   }
+  },
+  {
+   "agent": "prflow:pr-test-analyzer",
+   "severity": "suggestion",
+   "description": "Probably only one side of the react-chatbot-kit default-import unwrap (chatbotKit.Chatbot ?? chatbotKit) runs under vitest, and no ESM smoke test imports the built package, so reverting the unwrap could break Node-ESM consumers with tests green; part of the deferred out-of-scope bundle.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.tsx",
+    "line_range": [
+     53,
+     58
+    ],
+    "kind": "test_gap"
+   }
+  },
+  {
+   "agent": "prflow:comment-analyzer",
+   "severity": "suggestion",
+   "description": "Two blockGuards.ts docstrings overstate: line 1 says these are shape checks BlockRenderer uses, but isMalformedBlock and isBuiltInType are used only by ChatWidget.appendBlocks; line 10 says customRendererFor never returns an Object.prototype name, but the hasOwnProperty check only excludes inherited members, so an own toString or constructor function is still returned.",
+   "defect_signature": {
+    "file": "src/blocks/blockGuards.ts",
+    "line_range": [
+     1,
+     10
+    ],
+    "kind": "documented_falsehood"
+   }
+  },
+  {
+   "agent": "prflow:comment-analyzer",
+   "severity": "suggestion",
+   "description": "Several added ChatWidget.tsx comments (615-620 CSS sizing, 53-57 CommonJS interop, 239-242 and 253-256 mobile viewport history) mostly explain background rather than naming the change a maintainer must not make; all are factually accurate.",
+   "defect_signature": {
+    "file": "src/widget/ChatWidget.tsx",
+    "line_range": [
+     615,
+     620
+    ],
+    "kind": "style"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "important",
+   "description": "A host block renderer that throws while it is called escapes the per-block error boundary: renderBlock(block) runs inside BlockRenderer's own render (children expression at line 113), so custom(block) at 107 runs before BlockErrorBoundary exists, nothing above catches it (chatConfig.tsx 102-108, react-chatbot-kit), and React unmounts the whole widget. The pre-existing file header (5-7) claims one malformed block cannot break the widget; the existing test covers only a renderer that returns a later-throwing component. Pre-existing, but appendBlocks now routes host-shaped data to host renderers after mount.",
+   "defect_signature": {
+    "file": "src/blocks/BlockRenderer.tsx",
+    "line_range": [
+     106,
+     113
+    ],
+    "kind": "unhandled_exception"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "suggestion",
+   "description": "customRendererFor returns undefined for an own blockRenderers entry that is not a function, so such a block renders nothing with no log; for appendBlocks the warning at ChatWidget.tsx 538 says no blockRenderers entry exists when one does, pointing the host at the wrong cause.",
+   "defect_signature": {
+    "file": "src/blocks/blockGuards.ts",
+    "line_range": [
+     15,
+     17
+    ],
+    "kind": "other"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "suggestion",
+   "description": "The try block guarding host.onTurnFailed also wraps the attachmentListeners notification (line 423): a throwing listener is logged as 'onTurnFailed failed' and later listeners are never told the attachments were restored, so chips can fall out of sync; the only current listener cannot throw.",
+   "defect_signature": {
+    "file": "src/chat/ChatController.ts",
+    "line_range": [
+     418,
+     427
+    ],
+    "kind": "other"
+   }
+  },
+  {
+   "agent": "prflow:silent-failure-hunter",
+   "severity": "suggestion",
+   "description": "The two mount() diagnostics ('The widget was unmounted; ignoring the call.' at line 40 and 'The widget did not render; dropping N queued call(s).' at line 54) do not name which handle method was ignored or dropped.",
+   "defect_signature": {
+    "file": "src/mount.tsx",
+    "line_range": [
+     40,
+     54
+    ],
+    "kind": "other"
+   }
+  },
+  {
+   "agent": "prflow:requesting-code-review",
+   "severity": "important",
+   "description": "The failed-turn refill (onTurnFailed, the typed option, re-staging attachments, ChatWidget.tsx 349-355, README 120 and its tests) is a second concern bundled into this PR against CONTRIBUTING.md line 20 ('One concern per pull request'); nothing in appendBlocks depends on it and the PR description does not mention it. The description also omits that a blocks: [] answer with no sources now ends the turn silently instead of apologising (ChatController.ts 398-403, types.ts 110-115). The deferred iteration-2 scope finding listed only the viewport, CSS, interop and viewport-test changes, so this is new evidence.",
+   "defect_signature": {
+    "file": "src/chat/ChatController.ts",
+    "line_range": [
+     417,
+     428
+    ],
+    "kind": "other"
+   }
+  },
+  {
+   "agent": "prflow:requesting-code-review",
+   "severity": "suggestion",
+   "description": "The blockGuards.ts module header says it holds shape checks BlockRenderer uses to pick a renderer, which is false for isMalformedBlock (24-31) and isBuiltInType (33): BlockRenderer imports only customRendererFor, isChartBlock, isTableBlock and isTextBlock.",
+   "defect_signature": {
+    "file": "src/blocks/blockGuards.ts",
+    "line_range": [
+     1,
+     1
+    ],
+    "kind": "comment_drift"
+   }
+  }
+ ],
+ "phase3_dispatched": [
+  "prflow:code-reviewer",
+  "prflow:silent-failure-hunter",
+  "prflow:comment-analyzer",
+  "prflow:requesting-code-review",
+  "prflow:pr-test-analyzer"
+ ],
+ "expected_reviewers": [
+  "prflow:code-reviewer",
+  "prflow:silent-failure-hunter",
+  "prflow:comment-analyzer",
+  "prflow:requesting-code-review",
+  "prflow:pr-test-analyzer"
+ ],
+ "plan_eligible": [
+  "prflow:code-reviewer",
+  "prflow:silent-failure-hunter",
+  "prflow:comment-analyzer",
+  "prflow:requesting-code-review",
+  "prflow:pr-test-analyzer"
+ ],
+ "plan_exclusions": [],
+ "phase3_failed_agents": [],
+ "diff_profile": {
+  "small_diff": false,
+  "config_only": false,
+  "has_new_types": false,
+  "test_relevant": true,
+  "detect_all_audit": false,
+  "checklist_skipped": null,
+  "file_count": 13,
+  "changed_lines": 892
+ },
+ "cap_drops": {
+  "count": 0,
+  "by_category": {}
+ },
+ "acceptance_criteria": "",
+ "phase4_demoted": [],
+ "reject_drivers": [],
+ "criterion_exempt": [],
+ "verdict": "APPROVE with notes",
+ "report": "## Verdict: APPROVE with notes (no Critical findings; two Important findings and ten Suggestions sit below the critical threshold; four checklist items are inconclusive)\n\nThe PR can merge: no finding or checklist failure reaches the critical threshold, and the `appendBlocks` buffering, live routing, restore handling and `mount()` replay all checked out.\n\nRule applied: rule 6 — only findings and checklist results below the threshold, and inconclusive items, remain → APPROVE with notes\n\n## Code Review Findings\n\n### 🟠 Important / Major\n\n1. The PR bundles a second feature, the failed-turn refill, against CONTRIBUTING.md line 20 (\"One concern per pull request\"). The feature puts a failed typed message back in the composer and stages its attachments again, in `src/chat/ChatController.ts` (lines 77-82, 249-286, 350-356 and 417-428), `src/widget/ChatWidget.tsx` lines 349-355, README line 120 and its tests. Nothing in `appendBlocks` depends on it, and the PR description does not mention it. The PR description also leaves out a data-source contract change: a `blocks: []` answer with no sources now ends the turn silently instead of showing the apology (ChatController.ts lines 398-403, types.ts lines 110-115). The iteration-2 scope finding was deferred, but it named only the viewport and CSS changes, so this is new evidence. (raised by 2/5 agents; the second agent's finding shares the file, kind and line range by signature but describes a different defect, item 1 under Suggestion)\n2. A host block renderer that throws while it is called escapes the per-block error boundary and unmounts the whole widget, in `src/blocks/BlockRenderer.tsx` lines 106-113. `renderBlock(block)` runs inside `BlockRenderer`'s own render, so `custom(block)` runs before `BlockErrorBoundary` exists, and no boundary sits above it. The file header (lines 5-7, not changed by this diff) says one malformed block cannot break the widget. The existing test covers only a renderer that returns a component that throws later. This is older than the PR, but `appendBlocks` now sends host-shaped data to host renderers after mount. (raised by 1/5 agents)\n\n### 🟡 Suggestion / Minor (10)\n\n<details><summary>10 items</summary>\n\n1. The `onTurnFailed` try block in `src/chat/ChatController.ts` lines 418-427 also wraps the attachment-listener calls. A listener that throws is logged as \"onTurnFailed failed\", and the listeners after it are not told about the restored attachments. Today's only listener cannot throw. (raised by 2/5 agents; signature-matched with Important item 1, which describes a different defect)\n2. No test sends a failing slash command through the typed input path, so dropping `{ typed: true }` at `src/chat/ChatController.ts` line 249 would leave every test green. (raised by 1/5 agents)\n3. No test covers the guard in `src/widget/ChatWidget.tsx` lines 424-431 that keeps a saved conversation ID another tab stored while a failed restore was pending. (raised by 1/5 agents)\n4. Probably only one side of the react-chatbot-kit default-import unwrap in `src/widget/ChatWidget.tsx` lines 53-58 runs under the tests, and no ESM smoke test imports the built package. This is part of the deferred out-of-scope bundle. (raised by 1/5 agents)\n5. Two docstrings in `src/blocks/blockGuards.ts` overstate. Line 1 says the module holds shape checks BlockRenderer uses, but `isMalformedBlock` and `isBuiltInType` are used only by `ChatWidget.appendBlocks`. Line 10 says \"never an Object.prototype name\", but the `hasOwnProperty` check only excludes inherited names, so an own `toString` function is still returned. (raised by 1/5 agents) <!-- inertness: first-conjunct=held limb-one=held limb-two=held; evidence: making the sentences true changes no output or branch of customRendererFor, isMalformedBlock or isBuiltInType; git grep —no-index of view-head for both phrases found only blockGuards.ts lines 1 and 10; blockGuards is imported only by BlockRenderer.tsx and ChatWidget.tsx and is not re-exported -->\n6. The module header of `src/blocks/blockGuards.ts` line 1 says BlockRenderer uses these checks, which is false for `isMalformedBlock` and `isBuiltInType`. (raised by 1/5 agents) <!-- inertness: first-conjunct=held limb-one=held limb-two=held; evidence: same as item 5 — no output changes, no reader of the phrase outside the file, internal module -->\n7. Several added comments in `src/widget/ChatWidget.tsx` (lines 615-620, 53-57, 239-242 and 253-256) explain CSS or mobile-viewport background rather than just the change a maintainer must not make. All four are accurate. (raised by 1/5 agents)\n8. `customRendererFor` in `src/blocks/blockGuards.ts` lines 15-17 returns nothing for a `blockRenderers` entry that is not a function, so such a block renders nothing with no log. For `appendBlocks`, the warning at ChatWidget.tsx line 538 says no entry exists when one does. (raised by 1/5 agents)\n9. The two `mount()` warnings in `src/mount.tsx` lines 40 and 54 do not name the handle method that was ignored or dropped. (raised by 1/5 agents)\n- VC-35: FAIL (suggestion) — The comment asserts that once the widget unmounts, a handle kept past that point does nothing. [src/widget/ChatWidget.tsx:506]\n\n  <details><summary>Evidence</summary>\n\n  The comment at ChatWidget.tsx:506 says a handle kept past unmount 'does nothing'. Only appendBlocks (517-520) checks aliveRef. The other handle methods (useImperativeHandle 566-578) have no such guard. setLayout is changeLayout (190-195), which calls storage.set('layout', mode) after unmount. open() and close() go through setOpen (170-183), which calls storage.set('open', ...) when initialOpen==='remember'. newConversation calls controller.newConversation() on the disposed widget's controller. So a kept handle still does persistent work (storage writes) after unmount, and the absolute wording is wrong. I did not read the storage implementation. The counterexample is the unguarded setLayout, which reaches storage.set. This is a comment inaccuracy only, and the behavior is mostly harmless.\n\n  </details>\n\n</details>\n\n### ℹ️ Informational — Deferred (4)\n\n<details><summary>4 items</summary>\n\n- VC-7: INCONCLUSIVE (suggestion) — The ControllerHost.onTurnFailed TSDoc says `text` is what the user typed. handleUserInput passes text.trim() into runCommandInput for slash commands, and the untrimmed text into sendTurn otherwise, so onTurnFailed receives the trimmed input for a typed slash command. [src/chat/ChatController.ts:78]\n\n  <details><summary>Evidence</summary>\n\n  Trace confirmed: ChatController.ts:248-249 calls runCommandInput(text.trim(), {typed:true}) for slash input and :252 calls sendTurn(text, {typed:true}) untrimmed otherwise. runCommandInput passes `input` (trimmed) to sendTurn (:262,272,286), performTurn calls host.onTurnFailed?.(text) at :419. So '  /report weekly ' yields onTurnFailed('/report weekly'); the TSDoc at :78 says 'text is what they typed', which differs only by leading/trailing whitespace. ChatWidget.tsx:349-354 writes the received text into the composer. The factual behaviour matches the claim, but no requirement from an unchanged file (outside ChatController.ts) was found that demands the exact untrimmed text, and the discrepancy is whitespace-only, so I cannot show a broken requirement (FAIL) nor rule out one (INVALID).\n\n  </details>\n\n- VC-20: INCONCLUSIVE (suggestion) — The comment asserts that emulated mobile viewports never fire a second resize event after the window's resize event when they settle to their final size. [src/widget/ChatWidget.tsx:242]\n\n  <details><summary>Evidence</summary>\n\n  The comment at src/widget/ChatWidget.tsx:239-242 claims emulated mobile viewports never fire a second resize event. That is a claim about DevTools/browser behavior, and no repository source or dependency source settles it. I read the code (243-259). It behaves correctly with either outcome. The window 'resize' and visualViewport 'resize' listeners both call keepInsideViewport, and an effect re-clamps on open (257-259). I could not run a browser to check the emulation behavior, so the 'never' wording is unverified. Missing evidence: a run of a DevTools device-emulation toggle logging resize events.\n\n  </details>\n\n- VC-26: INCONCLUSIVE (important) — By the time ChatWidget's no-deps layout effect sets `mountedResetKeyRef.current = chatResetKey` for a newly keyed Chatbot, the controller is already bound to that Chatbot's state, so an append routed to `controller.addMessages` because the keys match reaches the new transcript rather than the unmounted one. [src/widget/ChatWidget.tsx:546]\n\n  <details><summary>Evidence</summary>\n\n  Read src/chat/ChatController.ts:494-499: the adapter ActionProvider binds the controller to the kit's setState inside its constructor (controller.bind(setState) when setState is a function). ChatWidget.tsx:498-501 sets mountedResetKeyRef in a no-deps layout effect, and :549 routes on it. Whether the controller is already bound to the new Chatbot's state by then depends on when react-chatbot-kit constructs the ActionProvider (during render, a ref/memo initializer, or an effect). No dependency_sources were supplied and the library is not in the views, so I could not read that. The library does exist in the working tree's node_modules (react-chatbot-kit/src/components/Chatbot/Chatbot.tsx), but I did not rely on it, since the rules bar falling back to the working tree. Missing evidence: the Chatbot.tsx instantiation site of ActionProvider and its timing relative to layout effects.\n\n  </details>\n\n- VC-31: INCONCLUSIVE (suggestion) — The comment asserts that a turn, command, new conversation or History switch made since the restore started wins over that restore. [src/widget/ChatWidget.tsx:388]\n\n  <details><summary>Evidence</summary>\n\n  ChatWidget.tsx:384-394 snapshots controller.activity and requestedResetKeyRef and skips the restore if either changed. Turns (ChatController.handleUserInput:244), commands (runCommandInput:257), new conversation (onNewConversation -> remountChat, ChatWidget.tsx:330-333) and a successful History switch (remountChat at :402) all change one of them, so the comment holds for those. Counterexample: a History switch whose getConversation rejects while the restore is pending. loadConversation returns false at :404-406 without remountChat, and switchToConversation (:441-444) calls controller.reply, which only calls addMessages (ChatController.ts:313-315) and does not bump activity or the reset key. The restore then resolves, passes the guard, calls switchConversation(saved) and remountChat. That replaces the error reply and moves the user to the saved conversation. A failed switch arguably was never 'made', so the comment may be literally accurate. I found no unchanged requirement file (no .src instruction files in the head view) showing that a failed switch must win, so I cannot grade FAIL or INVALID.\n\n  </details>\n\n</details>\n\n## Run details\n\n<details><summary>Run details</summary>\n\n- Diff profile: test_relevant, 13 changed files, 892 changed lines; full checklist (Phase 1+2) ran; detect_all_audit off.\n- Phase 0 working tree: check skipped in PR mode (head override, local checkout at aef077a).\n- Review prompt extension: PROMPT-EXTENSION-STATUS present-empty. Reviewer extension (requesting-code-review): present-empty.\n- CI evidence for the reviewed head: missing (no CI results were injected and no suite result for this head was held).\n- Verdict-severity threshold: critical (config read printed `critical`).\n- Normalized (wording-only): 0\n- Re-verification: none (no checklist FAIL at or above the threshold).\n- Carry-forward: Carried 0 of 17 prior items forward; generating the rest fresh.\n- prior-report: none\n- Dirty-tree check: clean.\n- No related issue found — requirement compliance not checked.\n- Corroboration note: the silent-failure-hunter finding at `src/chat/ChatController.ts` 418-427 and the final-pass finding at 417-428 share file, kind (`other`) and overlapping lines, so the signature rule counts them as corroborating, although they describe different defects.\n- Engine directory: plugin engine (candidates `.prflow/vendor/prflow/skills/review` and `.devflow/vendor/devflow/skills/review` do not exist); `.prflow/tmp/command-shapes.md` was absent.\n- Checklist: 38 passed, 1 failed, 4 inconclusive\n- <details><summary>✅ Passed items (38 of 43)</summary>\n\n  - VC-1: The README says that blocks appended before the widget first opens appear when it opens, that they stay when the saved conversation is restored, and that a new conversation or a History switch drops them. ChatWidget's appendBlocks implementation and its restore, new-conversation and History-switch paths must behave that way. [README.md:75]\n  - VC-2: The ChatWidgetHandle.appendBlocks TSDoc says that blocks appended before first open appear when the widget opens, that they stay when the saved conversation is restored, and that a new conversation or a History switch drops them. ChatWidget's implementation must match. [src/types.ts:305]\n  - VC-3: The README says appended blocks live only in the widget and never reach the data source or any persisted store, so a page reload loses them. [README.md:75]\n  - VC-4: The ChatWidgetHandle.appendBlocks TSDoc says appended blocks live only in the widget, so a page reload loses them. [src/types.ts:308]\n  - VC-5: The README says a failed message goes back into the input when the user typed it (not text a command sent) and the input is empty, with its attachments unless new ones are staged. ChatWidget's onTurnFailed host callback must refill only when the input is empty, and must return true exactly when it refilled. [README.md:120]\n  - VC-6: ChatController restages a failed turn's attachments only when host.onTurnFailed(text) returns the literal boolean true. ChatWidget's onTurnFailed must return true (not a truthy non-boolean) when it refilled the composer, and false or undefined otherwise. [src/chat/ChatController.ts:419]\n  - VC-8: Commands the host starts through open({ command }) reach ChatController.runCommandInput without `typed: true`, so a failed pass-through turn they start never calls onTurnFailed. Only handleUserInput (the kit's MessageParser path) marks turns as typed. [src/chat/ChatController.ts:255]\n  - VC-9: performTurn ends a turn silently only when response.blocks is an actual empty array with no sources, and apologizes when `blocks` is missing. The bundled fetch data source must pass the server's `blocks` through without defaulting a missing field to [], or a backend that omits `blocks` gets silence instead of the apology. [src/chat/ChatController.ts:394]\n  - VC-10: The AttachmentPicker comment says its reset subscription clears chips when a message takes the attachments and restores them when a failed turn hands them back. This holds only if ChatWidget passes controller.onAttachmentsReset as the picker's subscribeReset, since ChatController notifies that listener set with the restored list (ChatController.ts line 423). [src/attachments/AttachmentPicker.tsx:90]\n  - VC-11: mount() treats ref.current as null until React commits ChatWidget's imperative handle. While it stays null, the queued calls are retried every 10 ms; once it is set, they are replayed in order; if it is still null after REPLAY_TIMEOUT_MS (5000 ms), they are dropped with a console.error. The comment says a widget that threw while rendering never attaches its handle. [src/mount.tsx:49]\n  - VC-12: The test comment says React renders outside the faked timers (`vi.useFakeTimers({ toFake: ['setTimeout'] })`), so during this synchronous test the widget handle never attaches. This holds only if React's scheduler under the test environment does not schedule its render work through setTimeout, and if root.render does not commit synchronously. [src/mount.test.tsx:42]\n  - VC-13: Right after mount() and one appendBlocks call, exactly one faked setTimeout is pending (mount's flush). This needs mount(), createRoot().render, and createMockDataSource({ latencyMs: 0 }) to register no setTimeout synchronously. [src/mount.test.tsx:29]\n  - VC-14: The customRendererFor doc says it returns the host's renderer only for an own function property and never for an Object.prototype name. [src/blocks/blockGuards.ts:10]\n  - VC-15: The isMalformedBlock doc says it flags a block with no string `type`, or a built-in type (text, table, chart) with the wrong shape, and that BlockRenderer's built-ins skip such blocks. An all-unlabelled-text answer is rendered by ChatController.answerToMessages as plain Markdown (with `content ?? ''`), not by BlockRenderer, so how a malformed text block is shown depends on that path. [src/blocks/blockGuards.ts:20]\n  - VC-16: BlockRenderer now resolves custom renderers through customRendererFor, which ignores non-function values. That function relies on ChatWidgetOptions.blockRenderers being typed Record<string, (block: CustomBlock) => ReactNode> and on RenderContext supplying the host's blockRenderers object unchanged. [src/blocks/BlockRenderer.tsx:106]\n  - VC-17: The comment asserts that react-chatbot-kit ships as CommonJS, and that importing `{ Chatbot }` by name fails under Node ESM because Node cannot see the kit's named exports. [src/widget/ChatWidget.tsx:53]\n  - VC-18: The default import of react-chatbot-kit is either the Chatbot component itself (with no `Chatbot` property) or an object whose `Chatbot` property is the component, so `(chatbotKit).Chatbot ?? chatbotKit` resolves to a renderable component under each interop. [src/widget/ChatWidget.tsx:58]\n  - VC-19: When the global `visualViewport` exists it is an EventTarget that fires `resize`, and the widget adds and removes the same `keepInsideViewport` listener on it; when it is undefined the widget listens to the window's `resize` only. [src/widget/ChatWidget.tsx:243]\n  - VC-21: The comment asserts the window is re-clamped when it opens and when its size changes while open; this holds because `keepInsideViewport` depends on `dimensions`, so the `[isOpen, keepInsideViewport]` effect reruns on every dimensions change while open. [src/widget/ChatWidget.tsx:256]\n  - VC-22: `keepInsideViewport` returns the previous state objects when nothing changes (`maxWidth` already equal, `clampPosition` yielding the same x and y), so the open effect, which reruns whenever `keepInsideViewport` is recreated from a new `dimensions`, settles instead of looping. [src/widget/ChatWidget.tsx:231]\n  - VC-23: The comment asserts that percentages in the floating window's size limits resolve against its containing block (the viewport unless an ancestor sets transform, filter or similar), that a min size wins over a max size in CSS so the minimums are capped at 100% too, and that the 50vw/50dvh floor keeps the window visible inside a small such ancestor. [src/widget/ChatWidget.tsx:615]\n  - VC-24: The floating window's `minWidth`, `minHeight` and `maxHeight` are CSS `min()`/`max()` expressions using `vw` and `dvh`; in a browser that supports them they cap the window, and in one that rejects a unit or function the whole declaration is dropped, leaving that property unset while `maxWidth: '100%'` still applies. [src/widget/ChatWidget.tsx:621]\n  - VC-25: `controller.addMessages(...messages)` takes KitMessage arguments variadically and appends them to the transcript of the Chatbot the controller is currently bound to, including while the widget is closed but the Chatbot stays mounted. [src/widget/ChatWidget.tsx:549]\n  - VC-27: `answerToMessages(blocks)` accepts a Block array and returns an empty array when the blocks render nothing (for example a text block whose content is blank), and one or more KitMessages otherwise. [src/widget/ChatWidget.tsx:540]\n  - VC-28: `isMalformedBlock` is passed directly to `Array.prototype.filter`, so it receives (value, index, array); its signature must accept null and non-object values without throwing and must not interpret the index or array as a meaningful second or third argument. [src/widget/ChatWidget.tsx:525]\n  - VC-29: `isBuiltInType(type)` takes a block type string, and `customRendererFor(renderers, type)` accepts an undefined `blockRenderers` and returns a falsy value when no renderer is registered for the type. [src/widget/ChatWidget.tsx:534]\n  - VC-30: `controller.activity` changes on every user turn and command and stays unchanged on `addMessages`, so the restore treats only real interaction (plus a reset-key change) as a reason to abandon itself or keep a failed saved ID. [src/widget/ChatWidget.tsx:384]\n  - VC-32: `storage.get('conversation')` reads the current localStorage value on each call (not a cached copy), so a different ID saved by another tab or widget sharing the storage key is seen, and with persistence disabled it returns null. [src/widget/ChatWidget.tsx:428]\n  - VC-33: `ControllerHost.onTurnFailed` receives the failed turn's typed text and returns a boolean the controller reads as whether the composer was refilled; the widget returns false when the input is missing or non-empty and true after setting the value. [src/widget/ChatWidget.tsx:349]\n  - VC-34: The comment asserts the failed text is put back only when the composer is still empty, and that the refill never overwrites what the user typed. [src/widget/ChatWidget.tsx:351]\n  - VC-36: The handle's `appendBlocks` implements what `ChatWidgetHandle.appendBlocks` declares and documents: buffering before the first open, live append through the controller with no remount, custom types through `blockRenderers`, malformed/blank/non-array input ignored with console output, appended blocks dropped on a new conversation or History switch and kept over the saved-conversation restore, and a warning after unmount. [src/widget/ChatWidget.tsx:515]\n  - VC-37: The README's description of `appendBlocks` matches the widget's behavior: buffering before the first open, live append while open or closed after the first open, custom types through `blockRenderers`, dropping on a new conversation or History switch, keeping over the restore, and how invalid input is reported. [src/widget/ChatWidget.tsx:515]\n  - VC-38: The `finally` blocks restore `window.innerWidth` to 1024 and `window.innerHeight` to 768 on the assumption that these are jsdom's default window dimensions, so later tests see the same viewport as before. [src/widget/ChatWidget.test.tsx:79]\n  - VC-39: The test comment asserts jsdom provides no visual viewport, so defining `window.visualViewport` stands in for one and `Reflect.deleteProperty` afterwards restores the original environment rather than removing a native object. [src/widget/ChatWidget.test.tsx:87]\n  - VC-40: The real react-chatbot-kit renders each bot message with the class `react-chatbot-kit-chat-bot-message`, so `bubbles()` counts transcript bot messages and the before/after equality is not vacuously 0 === 0. [src/widget/ChatWidget.test.tsx:382]\n  - VC-41: `.radchat-blocks` is the class the widget puts on a rendered block message, so a zero count shows no block message was added rather than matching a class nothing renders. [src/widget/ChatWidget.test.tsx:416]\n  - VC-42: `listConversations` destructured from `createMockDataSource(...)` works when called unbound (it does not rely on `this`), and ConversationHistory calls it in a way that does not need the original data source as receiver. [src/widget/ChatWidget.test.tsx:589]\n  - VC-43: The first `getConversation` call is the saved-conversation restore and the History click makes the second one, which assumes ConversationHistory and the History switch reach `getConversation` only through `loadConversation`; the wrapper forwards `(id, opts)` matching the real `ChatDataSource.getConversation` signature. [src/widget/ChatWidget.test.tsx:620]\n\n  </details>\n\n</details>\n",
+ "diff_produced_at_head": "aef077a351505ca772e2e84be01ad466bbe5d7ee",
+ "checklist": [
+  {
+   "id": "VC-1",
+   "claim_signature": "api_contract:README.md:appendblocks-lifecycle-doc:75",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-2",
+   "claim_signature": "api_contract:types.ts:appendblocks-lifecycle-doc:305",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-3",
+   "claim_signature": "absolute_claim:README.md:appended-blocks-not-persisted:75",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-4",
+   "claim_signature": "absolute_claim:types.ts:appended-blocks-not-persisted:308",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-5",
+   "claim_signature": "api_contract:README.md:failed-turn-refill-doc:120",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-6",
+   "claim_signature": "api_contract:ChatController.ts:onturnfailed-returns-true:419",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-7",
+   "category": "api_contract",
+   "claim": "The ControllerHost.onTurnFailed TSDoc says `text` is what the user typed. handleUserInput passes text.trim() into runCommandInput for slash commands, and the untrimmed text into sendTurn otherwise, so onTurnFailed receives the trimmed input for a typed slash command.",
+   "claim_provenance": "source_authored",
+   "source_excerpt": "A turn the user typed failed; `text` is what they typed.",
+   "source_file": "src/chat/ChatController.ts",
+   "source_line": 78,
+   "verify_against": "src/chat/ChatController.ts handleUserInput and runCommandInput; src/widget/ChatWidget.tsx onTurnFailed (what it writes into the input)",
+   "verify_hint": "Trace a typed input with surrounding whitespace, such as `  /report weekly ` with `unknownCommands: 'send'`, through `handleUserInput` (line 248-249) to the `host.onTurnFailed?.(text)` call at line 419.",
+   "claim_signature": "api_contract:ChatController.ts:onturnfailed-text-is-typed:78",
+   "verification_mode": "agent",
+   "merged_from": [
+    "batch1:VC-7"
+   ],
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "Trace confirmed: ChatController.ts:248-249 calls runCommandInput(text.trim(), {typed:true}) for slash input and :252 calls sendTurn(text, {typed:true}) untrimmed otherwise. runCommandInput passes `input` (trimmed) to sendTurn (:262,272,286), performTurn calls host.onTurnFailed?.(text) at :419. So '  /report weekly ' yields onTurnFailed('/report weekly'); the TSDoc at :78 says 'text is what they typed', which differs only by leading/trailing whitespace. ChatWidget.tsx:349-354 writes the received text into the composer. The factual behaviour matches the claim, but no requirement from an unchanged file (outside ChatController.ts) was found that demands the exact untrimmed text, and the discrepancy is whitespace-only, so I cannot show a broken requirement (FAIL) nor rule out one (INVALID).",
+   "file_checked": "src/chat/ChatController.ts:78,248-252,419",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-8",
+   "claim_signature": "api_contract:ChatController.ts:host-command-not-typed:255",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-9",
+   "claim_signature": "data_format_assumption:ChatController.ts:missing-blocks-apology:394",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-10",
+   "claim_signature": "api_contract:AttachmentPicker.tsx:reset-listener-restores:90",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-11",
+   "claim_signature": "dependency_interaction:mount.tsx:ref-null-until-commit:49",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-12",
+   "claim_signature": "test_mock_alignment:mount.test.tsx:react-outside-fake-timers:42",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-13",
+   "claim_signature": "test_mock_alignment:mount.test.tsx:single-pending-timer:29",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-14",
+   "claim_signature": "absolute_claim:blockGuards.ts:own-function-only:10",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-15",
+   "claim_signature": "data_format_assumption:blockGuards.ts:malformed-matches-renderer:20",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-16",
+   "claim_signature": "dependency_interaction:BlockRenderer.tsx:render-context-blockrenderers:106",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-17",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:kit-cjs-named-exports:53",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-18",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:chatbot-default-unwrap:58",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-19",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:visualviewport-resize-listener:243",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-20",
+   "category": "absolute_claim",
+   "claim": "The comment asserts that emulated mobile viewports never fire a second resize event after the window's resize event when they settle to their final size.",
+   "claim_provenance": "source_authored",
+   "source_excerpt": "(emulated ones never fire a second one)",
+   "source_file": "src/widget/ChatWidget.tsx",
+   "source_line": 242,
+   "verify_against": "The resize-listener effect at ChatWidget.tsx 243-251 and the open re-clamp effect at 257-259",
+   "verify_hint": "Trace a DevTools device-emulation toggle in which the window fires a second `resize` after the visual viewport settles; the code must keep the window inside the viewport with either outcome (second resize or none)",
+   "claim_signature": "absolute_claim:ChatWidget.tsx:emulated-never-second-resize:242",
+   "verification_mode": "agent",
+   "merged_from": [
+    "batch2:VC-4"
+   ],
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "The comment at src/widget/ChatWidget.tsx:239-242 claims emulated mobile viewports never fire a second resize event. That is a claim about DevTools/browser behavior, and no repository source or dependency source settles it. I read the code (243-259). It behaves correctly with either outcome. The window 'resize' and visualViewport 'resize' listeners both call keepInsideViewport, and an effect re-clamps on open (257-259). I could not run a browser to check the emulation behavior, so the 'never' wording is unverified. Missing evidence: a run of a DevTools device-emulation toggle logging resize events.",
+   "file_checked": "src/widget/ChatWidget.tsx:239-259",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-21",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:reclamp-on-open-and-resize:256",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-22",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:keepinside-settles-no-loop:231",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-23",
+   "claim_signature": "data_format_assumption:ChatWidget.tsx:css-size-caps-comment:615",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-24",
+   "claim_signature": "data_format_assumption:ChatWidget.tsx:dvh-min-max-support:621",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-25",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:controller-addmessages:549",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-26",
+   "category": "dependency_interaction",
+   "claim": "By the time ChatWidget's no-deps layout effect sets `mountedResetKeyRef.current = chatResetKey` for a newly keyed Chatbot, the controller is already bound to that Chatbot's state, so an append routed to `controller.addMessages` because the keys match reaches the new transcript rather than the unmounted one.",
+   "claim_provenance": "generated_paraphrase",
+   "source_file": "src/widget/ChatWidget.tsx",
+   "source_line": 546,
+   "source_line_end": 550,
+   "verify_against": "`createKitAdapters` in src/chat/ChatController.ts and how react-chatbot-kit instantiates the `actionProvider` it is given",
+   "verify_hint": "Check where the ActionProvider from `createKitAdapters` binds the controller to the kit's `setState` (render, constructor, layout effect or passive effect) and compare with the layout effect at ChatWidget.tsx 498-501",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:controller-bound-before-layout-effect:546",
+   "verification_mode": "agent",
+   "merged_from": [
+    "batch2:VC-10"
+   ],
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "Read src/chat/ChatController.ts:494-499: the adapter ActionProvider binds the controller to the kit's setState inside its constructor (controller.bind(setState) when setState is a function). ChatWidget.tsx:498-501 sets mountedResetKeyRef in a no-deps layout effect, and :549 routes on it. Whether the controller is already bound to the new Chatbot's state by then depends on when react-chatbot-kit constructs the ActionProvider (during render, a ref/memo initializer, or an effect). No dependency_sources were supplied and the library is not in the views, so I could not read that. The library does exist in the working tree's node_modules (react-chatbot-kit/src/components/Chatbot/Chatbot.tsx), but I did not rely on it, since the rules bar falling back to the working tree. Missing evidence: the Chatbot.tsx instantiation site of ActionProvider and its timing relative to layout effects.",
+   "file_checked": "src/chat/ChatController.ts:494-499",
+   "normalization_ineligible": null,
+   "severity": "important"
+  },
+  {
+   "id": "VC-27",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:answertomessages-empty:540",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-28",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:ismalformed-filter-args:525",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-29",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:renderer-lookup-guards:534",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-30",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:controller-activity-semantics:384",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-31",
+   "category": "absolute_claim",
+   "claim": "The comment asserts that a turn, command, new conversation or History switch made since the restore started wins over that restore.",
+   "claim_provenance": "source_authored",
+   "source_excerpt": "// A turn, command, new conversation or History switch since the restore started wins.",
+   "source_file": "src/widget/ChatWidget.tsx",
+   "source_line": 388,
+   "source_line_end": 394,
+   "verify_against": "`loadConversation` and `switchToConversation` in ChatWidget.tsx and `ChatController.reply` in src/chat/ChatController.ts",
+   "verify_hint": "Trace a History switch whose `getConversation` rejects while the restore is still pending: `switchToConversation` then calls `controller.reply` without `remountChat`, so check whether `controller.activity` or `requestedResetKeyRef` changes before the restore resolves",
+   "claim_signature": "absolute_claim:ChatWidget.tsx:restore-loses-to-history-switch:388",
+   "verification_mode": "agent",
+   "merged_from": [
+    "batch2:VC-15"
+   ],
+   "reused_from_iter_prev": false,
+   "verdict": "INCONCLUSIVE",
+   "raw_verdict": "INCONCLUSIVE",
+   "normalized": false,
+   "evidence": "ChatWidget.tsx:384-394 snapshots controller.activity and requestedResetKeyRef and skips the restore if either changed. Turns (ChatController.handleUserInput:244), commands (runCommandInput:257), new conversation (onNewConversation -> remountChat, ChatWidget.tsx:330-333) and a successful History switch (remountChat at :402) all change one of them, so the comment holds for those. Counterexample: a History switch whose getConversation rejects while the restore is pending. loadConversation returns false at :404-406 without remountChat, and switchToConversation (:441-444) calls controller.reply, which only calls addMessages (ChatController.ts:313-315) and does not bump activity or the reset key. The restore then resolves, passes the guard, calls switchConversation(saved) and remountChat. That replaces the error reply and moves the user to the saved conversation. A failed switch arguably was never 'made', so the comment may be literally accurate. I found no unchanged requirement file (no .src instruction files in the head view) showing that a failed switch must win, so I cannot grade FAIL or INVALID.",
+   "file_checked": "src/widget/ChatWidget.tsx:384-447",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-32",
+   "claim_signature": "dependency_interaction:ChatWidget.tsx:storage-get-live-read:428",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-33",
+   "claim_signature": "api_contract:ChatWidget.tsx:onturnfailed-host-contract:349",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-34",
+   "claim_signature": "absolute_claim:ChatWidget.tsx:refill-never-overwrites:351",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-35",
+   "category": "absolute_claim",
+   "claim": "The comment asserts that once the widget unmounts, a handle kept past that point does nothing.",
+   "claim_provenance": "source_authored",
+   "source_excerpt": "// False once the widget unmounts; a handle kept past that point does nothing.",
+   "source_file": "src/widget/ChatWidget.tsx",
+   "source_line": 506,
+   "source_line_end": 513,
+   "verify_against": "The handle built by `useImperativeHandle` at ChatWidget.tsx 566-578 and `setOpen`/`changeLayout` at 170-197",
+   "verify_hint": "Trace calls on a kept handle after unmount other than appendBlocks: `open()` or `close()` with `initialOpen='remember'` (storage.set('open')), `setLayout()` (storage.set('layout')), and `newConversation()` on the disposed controller",
+   "claim_signature": "absolute_claim:ChatWidget.tsx:kept-handle-does-nothing:506",
+   "verification_mode": "agent",
+   "merged_from": [
+    "batch2:VC-19"
+   ],
+   "reused_from_iter_prev": false,
+   "verdict": "FAIL",
+   "raw_verdict": "FAIL",
+   "normalized": false,
+   "evidence": "The comment at ChatWidget.tsx:506 says a handle kept past unmount 'does nothing'. Only appendBlocks (517-520) checks aliveRef. The other handle methods (useImperativeHandle 566-578) have no such guard. setLayout is changeLayout (190-195), which calls storage.set('layout', mode) after unmount. open() and close() go through setOpen (170-183), which calls storage.set('open', ...) when initialOpen==='remember'. newConversation calls controller.newConversation() on the disposed widget's controller. So a kept handle still does persistent work (storage writes) after unmount, and the absolute wording is wrong. I did not read the storage implementation. The counterexample is the unguarded setLayout, which reaches storage.set. This is a comment inaccuracy only, and the behavior is mostly harmless.",
+   "file_checked": "src/widget/ChatWidget.tsx:506-578",
+   "normalization_ineligible": null,
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-36",
+   "claim_signature": "api_contract:ChatWidget.tsx:appendblocks-handle-tsdoc",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-37",
+   "claim_signature": "api_contract:ChatWidget.tsx:appendblocks-readme",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-38",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:jsdom-default-viewport:79",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-39",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:jsdom-no-visualviewport:87",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-40",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:kit-bot-message-class:382",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-41",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:radchat-blocks-class:416",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-42",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:unbound-listconversations:589",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  },
+  {
+   "id": "VC-43",
+   "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:getconversation-call-order:620",
+   "verification_mode": "agent",
+   "reused_from_iter_prev": false,
+   "verdict": "PASS",
+   "severity": "suggestion"
+  }
+ ]
+}

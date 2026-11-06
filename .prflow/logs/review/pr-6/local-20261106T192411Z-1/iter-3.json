@@ -1,0 +1,571 @@
+{
+  "iter": 3,
+  "loop_role": "fix",
+  "dispatch_mode": "fanned-out",
+  "dispatch_disposition": null,
+  "fix_commit_sha": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+  "fix_decisions": [
+    {
+      "finding_id": "F-1",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "Widget test 'appends while closed after the first open, and shows it on reopen'."
+    },
+    {
+      "finding_id": "F-2",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "Controller tests for refilled true/false and for files staged during the failing turn."
+    },
+    {
+      "finding_id": "F-3",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "Widget test 'drops appended blocks on a History switch without getConversation'."
+    },
+    {
+      "finding_id": "F-4",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "mount test asserts one pending timer (queued) before unmount()."
+    },
+    {
+      "finding_id": "F-5",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "README now limits the refill to a failed message the user typed, not text a command sent."
+    },
+    {
+      "finding_id": "F-6",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "onTurnFailed TSDoc adds '(unless the user has staged new ones)'."
+    },
+    {
+      "finding_id": "F-7",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "Viewport test comments reduced to reasons; arithmetic and background removed."
+    },
+    {
+      "finding_id": "F-8",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "New src/blocks/blockGuards.ts holds BlockRenderer's shape checks plus canRenderBlock; appendBlocks filters and warns about unrenderable blocks; tests (RED at ea9750b)."
+    },
+    {
+      "finding_id": "F-9",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "aliveRef (layout effect with cleanup) makes appendBlocks warn and return after unmount; test (RED at ea9750b)."
+    },
+    {
+      "finding_id": "F-10",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "SendMessageResponse.blocks TSDoc now states a sufficient condition for the apology instead of claiming every invisible answer gets one."
+    },
+    {
+      "finding_id": "F-11",
+      "decision": "pushed_back",
+      "skip_category": "claim-quality",
+      "source_file": "src/chat/ChatController.ts",
+      "claim_text": "A silent turn (blocks: [] with no sources) ends with no reply and no console line, leaving no trace when a backend returns [] by mistake.",
+      "evidence": "src/types.ts SendMessageResponse.blocks TSDoc and README line 120 document blocks: [] with no sources as the way to end a turn without a reply; logging on that documented, intended path would add console noise for every host that uses it. A backend returning [] by mistake is a backend defect.",
+      "parking_evidence": {
+        "basis": "Documented, intended contract; a log would be noise on the intended path.",
+        "failing_input": "sendMessage resolving { blocks: [] } with no sources",
+        "source": "src/types.ts SendMessageResponse.blocks TSDoc; README.md line 120",
+        "finding_ref": {
+          "iter": 3,
+          "index": 11
+        }
+      }
+    },
+    {
+      "finding_id": "F-12",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "mount() replay gives up after REPLAY_TIMEOUT_MS (5 s) with a console.error naming the dropped call count; test (RED at ea9750b)."
+    },
+    {
+      "finding_id": "F-13",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "Same README fix as F-5."
+    },
+    {
+      "finding_id": "F-14",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "AttachmentPicker comment covers the restore case."
+    },
+    {
+      "finding_id": "F-15",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "mount test 'replays a queued appendBlocks once the widget renders'."
+    },
+    {
+      "finding_id": "VC-8",
+      "decision": "applied",
+      "commit": "9fb0c300946adee6c6d5cf976e28310fafc69c0a",
+      "evidence": "See F-10."
+    },
+    {
+      "finding_id": "D-1",
+      "decision": "applied",
+      "commit": "8f1d6b7f50eebd7460a37bb370702d3b349ed0d7",
+      "original_severity": "important",
+      "source_file": "src/widget/ChatWidget.tsx",
+      "claim_text": "appendBlocks judged custom renderers from the render that created it, so after mount().update({ blockRenderers }) an immediate append dropped a block the updated BlockRenderer would draw.",
+      "evidence": "appendBlocks now drops only malformed blocks (renderer-independent); an unknown custom type is kept with a warning, renderers read through a ref; test adds the renderer after the append (RED at 9fb0c30)."
+    },
+    {
+      "finding_id": "D-2",
+      "decision": "applied",
+      "commit": "8f1d6b7f50eebd7460a37bb370702d3b349ed0d7",
+      "original_severity": "minor",
+      "source_file": "src/blocks/blockGuards.ts",
+      "claim_text": "Boolean(blockRenderers?.[type]) accepts Object.prototype names, which BlockRenderer then calls as renderers.",
+      "evidence": "customRendererFor accepts own function properties only and BlockRenderer uses it; BlockRenderer test (RED at 9fb0c30)."
+    },
+    {
+      "finding_id": "D-3",
+      "decision": "applied",
+      "commit": "aef077a351505ca772e2e84be01ad466bbe5d7ee",
+      "original_severity": "minor",
+      "source_file": "src/blocks/blockGuards.ts",
+      "claim_text": "isMalformedBlock doc claims BlockRenderer can never draw such blocks whatever renderers are registered; a host renderer for a built-in name would.",
+      "evidence": "Overclaiming clause deleted; doc states what the check covers. Final re-gate clean."
+    }
+  ],
+  "telemetry": {
+    "phase_1": {
+      "calls": 1,
+      "tokens": 172248,
+      "wall_clock_s": 662
+    }
+  },
+  "verification_evidence": {
+    "suite": "npm run check: exit 0; lint 0 errors (18 warnings in .prflow/tmp engine view copies only); typecheck ok; vitest 14 files, 200 passed, none skipped; builds ok",
+    "red_check": "4 new tests failed against ea9750b in a disposable worktree and pass at 9fb0c30"
+  },
+  "phase3_failed_agents": [],
+  "diff_produced_at_head": "ea9750bb5cd4c61cb97a652cdf6bd8f725fd1ddf",
+  "iteration_head": "aef077a351505ca772e2e84be01ad466bbe5d7ee",
+  "reference_reads": {
+    "fix_delta": {
+      "status": "verified",
+      "outcome": "refixed",
+      "reason": null
+    }
+  },
+  "phase3_findings": [
+    {
+      "finding_id": "F-1",
+      "agent": "prflow:pr-test-analyzer",
+      "severity": "suggestion",
+      "description": "No test appends while the widget is closed after it has been opened; the Chatbot stays mounted but hidden, so the append goes through controller.addMessages, and a change routing on isOpen instead of on a mounted Chatbot would silently lose those appends with every test still passing.",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          498,
+          520
+        ],
+        "kind": "test_gap"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-2",
+      "agent": "prflow:pr-test-analyzer",
+      "severity": "suggestion",
+      "description": "The two guards on staging a failed turn's attachments again are untested: the composer not being refilled (refilled false) and the user staging new files during the failed turn (stagedAttachments.length === 0).",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          418,
+          423
+        ],
+        "kind": "test_gap"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-3",
+      "agent": "prflow:pr-test-analyzer",
+      "severity": "suggestion",
+      "description": "No test reaches the History-switch branch for a data source with listConversations but no getConversation, which also clears appendedRef.",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          376,
+          381
+        ],
+        "kind": "test_gap"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-4",
+      "agent": "prflow:pr-test-analyzer",
+      "severity": "suggestion",
+      "description": "The mount test never confirms the appendBlocks call was queued (a pending timer) before unmount(), so a synchronously attached handle would let it pass without exercising the if (unmounted) return guard in flush.",
+      "defect_signature": {
+        "file": "src/mount.test.tsx",
+        "line_range": [
+          15,
+          19
+        ],
+        "kind": "test_gap"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-5",
+      "agent": "prflow:comment-analyzer",
+      "severity": "suggestion",
+      "description": "README line 120 says the typed text goes back into the empty input when sendMessage rejects, but a typed slash command whose run calls ctx.send is not refilled: sendTurn(text, { echo: true }) at ChatController.ts 295 passes no typed, so onTurnFailed never runs (the test 'does not report text a command sent as a failed turn' pins this).",
+      "defect_signature": {
+        "file": "README.md",
+        "line_range": [
+          120,
+          120
+        ],
+        "kind": "documented_falsehood"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-6",
+      "agent": "prflow:comment-analyzer",
+      "severity": "suggestion",
+      "description": "The ControllerHost.onTurnFailed TSDoc says returning true means the attachments are staged again, but the code restages them only when the user has not staged new ones (line 420, this.stagedAttachments.length === 0).",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          77,
+          80
+        ],
+        "kind": "comment_drift"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-7",
+      "agent": "prflow:comment-analyzer",
+      "severity": "suggestion",
+      "description": "Added test comments in ChatWidget.test.tsx (lines 73-75, 80, 81, 105-106, 109) are worked arithmetic or background about mobile viewports rather than reasons.",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.test.tsx",
+        "line_range": [
+          73,
+          109
+        ],
+        "kind": "style"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-8",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "important",
+      "description": "appendBlocks adds an empty avatar row with no console output when a block has a string type nothing renders (a typo against a registered custom type, a missing blockRenderers entry, or a table without headers/rows): answerToMessages keeps it, BlockRenderer returns null (BlockRenderer.tsx 110-111), and no warning fires, so a host's dropped card gives no signal.",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          508,
+          520
+        ],
+        "kind": "logic_error"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-9",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "important",
+      "description": "A ChatWidgetHandle kept after the React widget unmounts drops appendBlocks calls silently: mountedResetKeyRef keeps its last value (the layout effect at 498-500 has no cleanup), so the call goes to controller.addMessages, which calls the unmounted kit's setState and never checks disposed (ChatController.ts 201-208); the mount() wrapper warns for the same misuse.",
+      "defect_signature": {
+        "file": "src/widget/ChatWidget.tsx",
+        "line_range": [
+          519,
+          519
+        ],
+        "kind": "logic_error"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-10",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "suggestion",
+      "description": "The SendMessageResponse.blocks TSDoc says any other answer that shows nothing gets an apology, but an answer whose only block has a type with no renderer, or a malformed built-in block, shows nothing and gets no apology (messages.length > 0 at ChatController.ts 397-401).",
+      "defect_signature": {
+        "file": "src/types.ts",
+        "line_range": [
+          113,
+          114
+        ],
+        "kind": "documented_falsehood"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-11",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "suggestion",
+      "description": "A silent turn (blocks: [] with no sources) ends with no reply and no console line, so a backend returning an empty array on an internal failure looks like an ignored question with no trace for the developer; documented behavior, a diagnostic gap.",
+      "defect_signature": {
+        "file": "src/chat/ChatController.ts",
+        "line_range": [
+          397,
+          401
+        ],
+        "kind": "other"
+      },
+      "fix_decision": "pushed_back"
+    },
+    {
+      "finding_id": "F-12",
+      "agent": "prflow:silent-failure-hunter",
+      "severity": "suggestion",
+      "description": "When ChatWidget throws during its first render, ref.current stays null and mount()'s flush reschedules every 10 ms indefinitely while later handle calls, appendBlocks included, pile up in queued with no warning.",
+      "defect_signature": {
+        "file": "src/mount.tsx",
+        "line_range": [
+          45,
+          53
+        ],
+        "kind": "leak"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-13",
+      "agent": "prflow:requesting-code-review",
+      "severity": "suggestion",
+      "description": "README line 120 says a failed turn's typed text always goes back into the empty input, which does not happen for a typed slash command whose run calls ctx.send (sendTurn(text, { echo: true }) at ChatController.ts 295 never passes typed).",
+      "defect_signature": {
+        "file": "README.md",
+        "line_range": [
+          120,
+          120
+        ],
+        "kind": "documented_falsehood"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-14",
+      "agent": "prflow:requesting-code-review",
+      "severity": "suggestion",
+      "description": "AttachmentPicker.tsx line 90 still says the listener clears chips when the controller takes the attachments, but the listener now also restores a failed turn's attachments (ChatController.ts 420-423); the matching onAttachmentsReset TSDoc was updated, this comment was not.",
+      "defect_signature": {
+        "file": "src/attachments/AttachmentPicker.tsx",
+        "line_range": [
+          90,
+          97
+        ],
+        "kind": "comment_drift"
+      },
+      "fix_decision": "applied"
+    },
+    {
+      "finding_id": "F-15",
+      "agent": "prflow:requesting-code-review",
+      "severity": "suggestion",
+      "description": "No test checks that mount()'s appendBlocks reaches the widget, either replayed from the queue or forwarded after the ref attaches; mount.test.tsx covers only the after-unmount path, so wiring it to the wrong method would pass every test.",
+      "defect_signature": {
+        "file": "src/mount.tsx",
+        "line_range": [
+          63,
+          63
+        ],
+        "kind": "test_gap"
+      },
+      "fix_decision": "applied"
+    }
+  ],
+  "diff_profile": {
+    "small_diff": false,
+    "config_only": false,
+    "has_new_types": false,
+    "test_relevant": true,
+    "detect_all_audit": false,
+    "checklist_skipped": null,
+    "file_count": 9,
+    "changed_lines": 664
+  },
+  "phase3_dispatched": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "expected_reviewers": [
+    "prflow:code-reviewer",
+    "prflow:silent-failure-hunter",
+    "prflow:comment-analyzer",
+    "prflow:requesting-code-review",
+    "prflow:pr-test-analyzer"
+  ],
+  "cap_drops": {
+    "count": 0,
+    "by_category": {}
+  },
+  "checklist": [
+    {
+      "id": "VC-1",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:chatbot-kit-default-unwrap:57",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-2",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:node-esm-named-import-fails:52",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-3",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:kit-binds-before-mounted-key:519",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-4",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:initial-messages-seed-mount:520",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-5",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:bot-message-class-count:388",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-6",
+      "claim_signature": "test_mock_alignment:mount.test.tsx:react-scheduler-not-settimeout:310",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-7",
+      "claim_signature": "test_mock_alignment:ChatWidget.test.tsx:localstorage-cleared-between-tests:448",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-8",
+      "claim_signature": "absolute_claim:types.ts:empty-answer-gets-apology:110",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "FAIL",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-9",
+      "claim_signature": "api_contract:ChatController.ts:fetch-missing-blocks-not-silent:393",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-10",
+      "claim_signature": "data_format_assumption:ChatController.ts:sources-array-or-absent:397",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-11",
+      "claim_signature": "api_contract:README.md:failed-turn-refill-attachments:120",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-12",
+      "claim_signature": "api_contract:types.ts:appended-blocks-lifecycle:303",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-13",
+      "claim_signature": "api_contract:README.md:appended-blocks-lifecycle:75",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-14",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:emulated-viewport-no-second-resize:241",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-15",
+      "claim_signature": "absolute_claim:ChatWidget.tsx:min-size-wins-over-max:588",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-16",
+      "claim_signature": "dependency_interaction:ChatWidget.tsx:dvh-css-math-support:591",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "PASS",
+      "severity": "suggestion"
+    },
+    {
+      "id": "VC-17",
+      "claim_signature": "api_contract:CHANGELOG.md:changelog-covers-new-behavior",
+      "verification_mode": "agent",
+      "reused_from_iter_prev": false,
+      "verdict": "INCONCLUSIVE",
+      "severity": "suggestion"
+    }
+  ],
+  "fix_files": [
+    "README.md",
+    "src/attachments/AttachmentPicker.tsx",
+    "src/blocks/BlockRenderer.tsx",
+    "src/blocks/blockGuards.ts",
+    "src/chat/ChatController.test.ts",
+    "src/chat/ChatController.ts",
+    "src/mount.test.tsx",
+    "src/mount.tsx",
+    "src/types.ts",
+    "src/widget/ChatWidget.test.tsx",
+    "src/widget/ChatWidget.tsx"
+  ],
+  "synthesized": false
+}

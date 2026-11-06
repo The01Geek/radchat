@@ -1,0 +1,240 @@
+[
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "critical",
+  "description": "A turn ends with no reply and no log whenever the answer's blocks array renders nothing ([], blank or whitespace-only text, or all-invalid blocks), where these used to show the apology. The apology is reachable only when a host omits the required blocks field, and the silent meaning of an empty blocks array is undocumented.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    381,
+    389
+   ],
+   "kind": "logic_error"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "important",
+  "description": "Blocks passed to appendBlocks are silently lost when the saved-conversation restore resolves after them (line 369 replaces the buffer; the line 370 remount drops live appends; appendBlocks never changes controller.activity, so onlyIfIdle does not stop the restore), and when newConversation() or open({ startNewConversation: true }) is followed by appendBlocks in the same tick.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    460,
+    469
+   ],
+   "kind": "race"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "important",
+  "description": "The restore and same-tick new-conversation paths that drop appended blocks have no test; src/test/setup.ts clears localStorage after each test and the only new-conversation test appends before newConversation.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    460,
+    469
+   ],
+   "kind": "logic_error"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "important",
+  "description": "The published appendBlocks TSDoc says buffered blocks appear when the widget first mounts and that only a new conversation drops the buffer, but a saved-conversation restore resolving after the append replaces the buffer (ChatWidget.tsx line 369).",
+  "defect_signature": {
+   "file": "src/types.ts",
+   "line_range": [
+    297,
+    302
+   ],
+   "kind": "documented_falsehood"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:code-reviewer",
+  "severity": "important",
+  "description": "The widget's onTurnFailed composer refill (only when the input is empty) has no widget test; ChatController.test.ts only checks the callback is called (CONTRIBUTING.md line 21).",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    337,
+    341
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "important",
+  "description": "appendBlocks silently drops malformed input (single object, non-array, all-invalid array) and throws a TypeError on null or undefined; in mount() the throw happens inside the replay timer (src/mount.tsx line 44) and abandons later queued calls.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    462,
+    466
+   ],
+   "kind": "api_misuse"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "important",
+  "description": "README does not document appendBlocks(blocks), the silent turn for an empty blocks array, or the composer refill after a failed turn.",
+  "defect_signature": {
+   "file": "README.md",
+   "line_range": [
+    73,
+    73
+   ],
+   "kind": "other"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "Viewport comments claim more than the code does: lines 533-535 say percentage max sizes keep the window fitted, but minWidth 300px and minHeight 400px win over max sizes in CSS, and a transformed ancestor becomes the containing block; lines 236-239 cite the keyboard, but the clamp reads only window.innerWidth and innerHeight; lines 250-253 also re-run on every size change.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    236,
+    239
+   ],
+   "kind": "documented_falsehood"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "suggestion",
+  "description": "The test 'drops buffered blocks on a new conversation' renders with initialOpen, so nothing is buffered and the documented buffer-drop is untested; 'ignores an empty append' (380-385) only checks that nothing throws.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.test.tsx",
+   "line_range": [
+    387,
+    397
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "The test comment says only the visual viewport reports the narrower size, but line 104 narrows window.innerWidth and the stub visual viewport has no size; the line 87 comment is vacuous and the line 387 test name does not match the test.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.test.tsx",
+   "line_range": [
+    102,
+    103
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "The silent-update comment names only an empty array though the condition also covers non-empty arrays that render nothing; the line 77 comment says the widget refills the composer though it refills only an empty one and also fires for command-sent text.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    382,
+    385
+   ],
+   "kind": "documented_falsehood"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "The kit interop comment is hard to follow and never names the change a maintainer must avoid; const Chatbot sits between two import blocks.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    32,
+    37
+   ],
+   "kind": "style"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "README.md line 73 and CHANGELOG.md line 17 list the handle methods without appendBlocks(blocks), and neither documents the silent empty-blocks turn.",
+  "defect_signature": {
+   "file": "README.md",
+   "line_range": [
+    73,
+    73
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "suggestion",
+  "description": "host.onTurnFailed runs without a try/catch before the error bubble, so a throwing callback leaves no error message and an unhandled rejection.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    393,
+    393
+   ],
+   "kind": "unhandled_exception"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "onTurnFailed also fires for text a command sent through send(text) (line 289), so command text lands in an empty composer as if the user typed it.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    393,
+    393
+   ],
+   "kind": "logic_error"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "The visual-viewport listener clamps against layout-viewport sizes, and its test (ChatWidget.test.tsx 85-111) changes innerWidth, so the keyboard case is not exercised.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    236,
+    248
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "The re-clamp-on-open test overrides innerWidth and innerHeight without try/finally, so a failed assertion leaks a 390x844 viewport into later tests.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.test.tsx",
+   "line_range": [
+    61,
+    83
+   ],
+   "kind": "other"
+  },
+  "fix_decision": "applied"
+ }
+]

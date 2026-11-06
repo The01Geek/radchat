@@ -1,0 +1,227 @@
+[
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "important",
+  "description": "The PR bundles changes unrelated to appendBlocks against CONTRIBUTING.md line 20 (one concern per PR), none named in the PR description: viewport re-clamping (ChatWidget.tsx 228-257), CSS size caps (570-578), the react-chatbot-kit CommonJS interop unwrap (26, 52-56) and two viewport tests (ChatWidget.test.tsx 61-111).",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    228,
+    257
+   ],
+   "kind": "other"
+  },
+  "fix_decision": "deferred",
+  "iter": 2
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "No test appends while the widget is closed after it has been opened; the Chatbot stays mounted but hidden, so the append goes through controller.addMessages, and a change routing on isOpen instead of on a mounted Chatbot would silently lose those appends with every test still passing.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    498,
+    520
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "The two guards on staging a failed turn's attachments again are untested: the composer not being refilled (refilled false) and the user staging new files during the failed turn (stagedAttachments.length === 0).",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    418,
+    423
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "No test reaches the History-switch branch for a data source with listConversations but no getConversation, which also clears appendedRef.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    376,
+    381
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "The mount test never confirms the appendBlocks call was queued (a pending timer) before unmount(), so a synchronously attached handle would let it pass without exercising the if (unmounted) return guard in flush.",
+  "defect_signature": {
+   "file": "src/mount.test.tsx",
+   "line_range": [
+    15,
+    19
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "README line 120 says the typed text goes back into the empty input when sendMessage rejects, but a typed slash command whose run calls ctx.send is not refilled: sendTurn(text, { echo: true }) at ChatController.ts 295 passes no typed, so onTurnFailed never runs (the test 'does not report text a command sent as a failed turn' pins this).",
+  "defect_signature": {
+   "file": "README.md",
+   "line_range": [
+    120,
+    120
+   ],
+   "kind": "documented_falsehood"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "The ControllerHost.onTurnFailed TSDoc says returning true means the attachments are staged again, but the code restages them only when the user has not staged new ones (line 420, this.stagedAttachments.length === 0).",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    77,
+    80
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "Added test comments in ChatWidget.test.tsx (lines 73-75, 80, 81, 105-106, 109) are worked arithmetic or background about mobile viewports rather than reasons.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.test.tsx",
+   "line_range": [
+    73,
+    109
+   ],
+   "kind": "style"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "important",
+  "description": "appendBlocks adds an empty avatar row with no console output when a block has a string type nothing renders (a typo against a registered custom type, a missing blockRenderers entry, or a table without headers/rows): answerToMessages keeps it, BlockRenderer returns null (BlockRenderer.tsx 110-111), and no warning fires, so a host's dropped card gives no signal.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    508,
+    520
+   ],
+   "kind": "logic_error"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "important",
+  "description": "A ChatWidgetHandle kept after the React widget unmounts drops appendBlocks calls silently: mountedResetKeyRef keeps its last value (the layout effect at 498-500 has no cleanup), so the call goes to controller.addMessages, which calls the unmounted kit's setState and never checks disposed (ChatController.ts 201-208); the mount() wrapper warns for the same misuse.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    519,
+    519
+   ],
+   "kind": "logic_error"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "suggestion",
+  "description": "The SendMessageResponse.blocks TSDoc says any other answer that shows nothing gets an apology, but an answer whose only block has a type with no renderer, or a malformed built-in block, shows nothing and gets no apology (messages.length > 0 at ChatController.ts 397-401).",
+  "defect_signature": {
+   "file": "src/types.ts",
+   "line_range": [
+    113,
+    114
+   ],
+   "kind": "documented_falsehood"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "suggestion",
+  "description": "A silent turn (blocks: [] with no sources) ends with no reply and no console line, so a backend returning an empty array on an internal failure looks like an ignored question with no trace for the developer; documented behavior, a diagnostic gap.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    397,
+    401
+   ],
+   "kind": "other"
+  },
+  "fix_decision": "pushed_back"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "suggestion",
+  "description": "When ChatWidget throws during its first render, ref.current stays null and mount()'s flush reschedules every 10 ms indefinitely while later handle calls, appendBlocks included, pile up in queued with no warning.",
+  "defect_signature": {
+   "file": "src/mount.tsx",
+   "line_range": [
+    45,
+    53
+   ],
+   "kind": "leak"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "suggestion",
+  "description": "README line 120 says a failed turn's typed text always goes back into the empty input, which does not happen for a typed slash command whose run calls ctx.send (sendTurn(text, { echo: true }) at ChatController.ts 295 never passes typed).",
+  "defect_signature": {
+   "file": "README.md",
+   "line_range": [
+    120,
+    120
+   ],
+   "kind": "documented_falsehood"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "suggestion",
+  "description": "AttachmentPicker.tsx line 90 still says the listener clears chips when the controller takes the attachments, but the listener now also restores a failed turn's attachments (ChatController.ts 420-423); the matching onAttachmentsReset TSDoc was updated, this comment was not.",
+  "defect_signature": {
+   "file": "src/attachments/AttachmentPicker.tsx",
+   "line_range": [
+    90,
+    97
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "suggestion",
+  "description": "No test checks that mount()'s appendBlocks reaches the widget, either replayed from the queue or forwarded after the ref attaches; mount.test.tsx covers only the after-unmount path, so wiring it to the wrong method would pass every test.",
+  "defect_signature": {
+   "file": "src/mount.tsx",
+   "line_range": [
+    63,
+    63
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ }
+]

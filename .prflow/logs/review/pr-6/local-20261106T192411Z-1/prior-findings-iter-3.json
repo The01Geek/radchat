@@ -1,0 +1,184 @@
+[
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "important",
+  "description": "No test checks that a History switch drops appended blocks (line 392 `if (!options.restore) appendedRef.current = [];`, also line 375 in the no-getConversation branch), though README line 75 and the appendBlocks TSDoc promise it; the only History test (ChatWidget.test.tsx 239-251) never calls appendBlocks.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    391,
+    397
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "important",
+  "description": "An appendBlocks call after unmount() queues the call and schedules flush, which finds no handle and reschedules itself every 10 ms forever; the call is dropped with no log. Pre-existing replay mechanism shared by every handle method, newly reachable through host-driven appendBlocks.",
+  "defect_signature": {
+   "file": "src/mount.tsx",
+   "line_range": [
+    33,
+    47
+   ],
+   "kind": "leak"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "important",
+  "description": "appendBlocks silently drops malformed entries (null or no string type) from an array that also holds valid ones; the warning fires only when nothing renders.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    495,
+    498
+   ],
+   "kind": "api_misuse"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "important",
+  "description": "The PR bundles changes unrelated to appendBlocks against CONTRIBUTING.md line 20 (one concern per PR), none named in the PR description: viewport re-clamping (ChatWidget.tsx 228-257), CSS size caps (570-578), the react-chatbot-kit CommonJS interop unwrap (26, 52-56) and two viewport tests (ChatWidget.test.tsx 61-111).",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    228,
+    257
+   ],
+   "kind": "other"
+  },
+  "fix_decision": "deferred"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "No test covers the guard that forgets the saved conversation ID only while storage still holds the one that failed (pending restore followed by a History switch).",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    415,
+    418
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:pr-test-analyzer",
+  "severity": "suggestion",
+  "description": "No test pins down that { blocks: [], sources: [...] } still renders its sources; dropping messages.length === 0 from the silent condition would pass every test.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    387,
+    395
+   ],
+   "kind": "test_gap"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "suggestion",
+  "description": "After a failed turn the composer gets the text back but not the attachments, so a retry from the refilled text silently sends without the files (README promises only the text).",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    409,
+    415
+   ],
+   "kind": "logic_error"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:silent-failure-hunter",
+  "severity": "suggestion",
+  "description": "A turn with blocks: [] and sources that all lack a title renders nothing and ends silently with no reply, apology or log, while the docs describe the silent case as an empty array with no sources.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    391,
+    391
+   ],
+   "kind": "logic_error"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:requesting-code-review",
+  "severity": "suggestion",
+  "description": "The silent-turn comment (ChatController.ts 389-390) and SendMessageResponse.blocks TSDoc (types.ts 110-114) name only the no-sources case, while non-empty sources that render nothing also end the turn silently.",
+  "defect_signature": {
+   "file": "src/chat/ChatController.ts",
+   "line_range": [
+    389,
+    391
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "README line 75 says appended blocks stay when the saved conversation is restored without saying they live only in widget memory and are gone after a page reload.",
+  "defect_signature": {
+   "file": "README.md",
+   "line_range": [
+    75,
+    75
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "The ChatWidgetHandle.appendBlocks TSDoc does not say appended blocks exist only in the widget and are lost on reload.",
+  "defect_signature": {
+   "file": "src/types.ts",
+   "line_range": [
+    302,
+    307
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "The kit-import comment's claim that under Vite the default import is the whole module.exports is probably wrong (Vite's interop returns .default when __esModule is set); unconfirmed from the repository.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    52,
+    55
+   ],
+   "kind": "documented_falsehood"
+  },
+  "fix_decision": "applied"
+ },
+ {
+  "agent": "prflow:comment-analyzer",
+  "severity": "suggestion",
+  "description": "The line 416 comment describes only the failed-load case, while ok is also false when the restore was abandoned by a reset.",
+  "defect_signature": {
+   "file": "src/widget/ChatWidget.tsx",
+   "line_range": [
+    416,
+    417
+   ],
+   "kind": "comment_drift"
+  },
+  "fix_decision": "applied"
+ }
+]
