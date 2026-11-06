@@ -1,0 +1,14 @@
+# gitleaks configuration, read automatically by the CI secret scan.
+# Keeps every default rule and adds one narrow allowlist.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+# A bare 40-character lowercase hex value is a git commit SHA, not a
+# credential. PRFlow's telemetry logs (.prflow/logs/ on the
+# prflow-telemetry branch) record head SHAs under keys like
+# "api_head_sha", which the generic-api-key rule otherwise flags.
+description = "Git commit SHAs"
+regexTarget = "secret"
+regexes = ['''^[0-9a-f]{40}$''']

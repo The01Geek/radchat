@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'node:path';
 
 export default defineConfig({
-  root: resolve(__dirname, 'demo'),
+  root: resolve(import.meta.dirname, 'demo'),
   base: './',
   plugins: [react()],
   server: {
@@ -19,7 +19,7 @@ export default defineConfig({
     port: 4173,
   },
   build: {
-    outDir: resolve(__dirname, 'demo-dist'),
+    outDir: resolve(import.meta.dirname, 'demo-dist'),
     emptyOutDir: true,
     // Plotly is loaded lazily in its own chunk the first time a chart appears.
     chunkSizeWarningLimit: 1500,

@@ -1,6 +1,9 @@
-# Weekly dependency and GitHub Actions updates, grouped into one PR per
-# ecosystem. Security updates are not grouped by Dependabot and arrive
-# separately.
+# Weekly dependency and GitHub Actions updates. Security updates are not
+# grouped by Dependabot and arrive separately.
+#
+# npm: every minor and patch update arrives in one low-risk PR. Major
+# updates arrive as separate PRs, with packages that must move together
+# grouped, so each breaking upgrade can be tested and merged on its own.
 version: 2
 updates:
   - package-ecosystem: "npm"
@@ -8,9 +11,46 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      npm-dependencies:
+      npm-minor-and-patch:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      eslint-major:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "globals"
+        update-types:
+          - "major"
+      vite-major:
+        patterns:
+          - "vite"
+          - "vitest"
+          - "@vitejs/*"
+        update-types:
+          - "major"
+      plotly-major:
+        # The "overrides" entry for react-plotly.js in package.json pins
+        # its plotly.js to plotly.js-basic-dist-min. Dependabot does not
+        # update overrides, so raise it by hand in the same PR.
+        patterns:
+          - "plotly.js-basic-dist-min"
+          - "react-plotly.js"
+        update-types:
+          - "major"
+    ignore:
+      # typescript-eslint supports TypeScript below 6.1 only. Remove this
+      # once a typescript-eslint release accepts the next TypeScript major.
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
+      # Node types stay on a Node line CI tests against (22 and 24), not
+      # the newest release, so config code can't use APIs CI never runs.
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: "github-actions"

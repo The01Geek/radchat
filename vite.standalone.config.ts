@@ -18,7 +18,7 @@ export default defineConfig({
     sourcemap: true,
     cssCodeSplit: false,
     lib: {
-      entry: resolve(__dirname, 'src/standalone.ts'),
+      entry: resolve(import.meta.dirname, 'src/standalone.ts'),
       name: 'RadChat',
       formats: ['umd'],
       fileName: () => 'radchat.umd.js',

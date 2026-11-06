@@ -26,7 +26,7 @@ Production dependency tree (generated with license-checker --production)
 
 @types/debug@4.1.13 (MIT)
     Copyright (c) Microsoft Corporation.
-@types/estree@1.0.9 (MIT)
+@types/estree@1.0.10 (MIT)
     Copyright (c) Microsoft Corporation.
 @types/estree-jsx@1.0.5 (MIT)
     Copyright (c) Microsoft Corporation.
@@ -74,13 +74,13 @@ estree-util-is-identifier-name@3.0.0 (MIT)
     Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>
 extend@3.0.2 (MIT)
     Copyright (c) 2014 Stefan Thomas
-hast-util-to-jsx-runtime@2.3.6 (MIT)
+hast-util-to-jsx-runtime@2.3.7 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 hast-util-whitespace@3.0.0 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
 html-url-attributes@3.0.1 (MIT)
     Copyright (c) Titus Wormer
-inline-style-parser@0.2.7 (MIT)
+inline-style-parser@0.2.9 (MIT)
     Copyright (c) 2012 TJ Holowaychuk <tj@vision-media.ca>
 is-alphabetical@2.0.1 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
@@ -92,33 +92,29 @@ is-hexadecimal@2.0.1 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
 is-plain-obj@4.1.0 (MIT)
     Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
-js-tokens@4.0.0 (MIT)
-    Copyright (c) 2014, 2015, 2016, 2017, 2018 Simon Lydell
 longest-streak@3.1.0 (MIT)
     Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>
-loose-envify@1.4.0 (MIT)
-    Copyright (c) 2015 Andres Suarez <zertosh@gmail.com>
-markdown-table@3.0.4 (MIT)
+markdown-table@3.1.0 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
-mdast-util-find-and-replace@3.0.3 (MIT)
+mdast-util-find-and-replace@3.0.4 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 mdast-util-from-markdown@2.1.0 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 mdast-util-gfm@3.1.0 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
-mdast-util-gfm-autolink-literal@2.0.1 (MIT)
+mdast-util-gfm-autolink-literal@2.1.0 (MIT)
     Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>
 mdast-util-gfm-footnote@2.1.0 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 mdast-util-gfm-strikethrough@2.0.1 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
-mdast-util-gfm-table@2.0.0 (MIT)
+mdast-util-gfm-table@2.0.1 (MIT)
     Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>
-mdast-util-gfm-task-list-item@2.0.0 (MIT)
+mdast-util-gfm-task-list-item@2.0.1 (MIT)
     Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>
 mdast-util-mdx-expression@2.0.1 (MIT)
     Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>
-mdast-util-mdx-jsx@3.2.0 (MIT)
+mdast-util-mdx-jsx@3.2.1 (MIT)
     Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>
 mdast-util-mdxjs-esm@2.0.1 (MIT)
     Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com>
@@ -126,7 +122,7 @@ mdast-util-phrasing@4.1.0 (MIT)
     Copyright (c) 2017 Titus Wormer <tituswormer@gmail.com>
 mdast-util-to-hast@13.2.1 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
-mdast-util-to-markdown@2.2.0 (MIT)
+mdast-util-to-markdown@2.2.3 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 mdast-util-to-string@4.0.0 (MIT)
     Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
@@ -190,34 +186,24 @@ micromark-util-types@2.0.3 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 ms@2.1.3 (MIT)
     Copyright (c) 2020 Vercel, Inc.
-object-assign@4.1.1 (MIT)
-    Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
 parse-entities@4.0.2 (MIT)
     Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com>
-plotly.js-basic-dist-min@3.7.0 (MIT)
+plotly.js-basic-dist-min@4.2.0 (MIT)
     Copyright (c) 2016-2024 Plotly Technologies Inc.
-prop-types@15.8.1 (MIT)
-    Copyright (c) 2013-present, Facebook, Inc.
 property-information@7.2.0 (MIT)
     Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com>
-react@19.3.0 (MIT)
-    Copyright (c) Meta Platforms, Inc. and affiliates.
-react@19.3.0 (MIT)
+react@19.3.1 (MIT)
     Copyright (c) Meta Platforms, Inc. and affiliates.
 react-chatbot-kit@2.2.2 (MIT)
     Copyright (c) 2020 Fredrik Strand Oseberg
 react-conditionally-render@1.0.2 (ISC)
     Copyright 2021 Fredrik Strand Oseberg
-react-dom@19.3.0 (MIT)
+react-dom@19.3.1 (MIT)
     Copyright (c) Meta Platforms, Inc. and affiliates.
-react-dom@19.3.0 (MIT)
-    Copyright (c) Meta Platforms, Inc. and affiliates.
-react-is@16.13.1 (MIT)
-    Copyright (c) Facebook, Inc. and its affiliates.
 react-markdown@10.1.0 (MIT)
     Copyright (c) Espen Hovlandsdal
-react-plotly.js@2.6.0 (MIT)
-    Copyright (c) 2017 Plotly, Inc.
+react-plotly.js@4.1.0 (MIT)
+    Copyright (c) 2017-2024 Plotly Technologies Inc.
 remark-gfm@4.0.1 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 remark-parse@11.0.0 (MIT)
@@ -228,15 +214,11 @@ remark-stringify@11.0.0 (MIT)
     Copyright (c) 2014 Titus Wormer <tituswormer@gmail.com>
 scheduler@0.28.0 (MIT)
     Copyright (c) Meta Platforms, Inc. and affiliates.
-scheduler@0.28.0 (MIT)
-    Copyright (c) Meta Platforms, Inc. and affiliates.
 space-separated-tokens@2.0.2 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
 stringify-entities@4.0.4 (MIT)
     Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>
-style-to-js@1.1.21 (MIT)
-    Copyright (c) 2020 Menglin "Mark" Xu <mark@remarkablemark.org>
-style-to-object@1.0.14 (MIT)
+style-to-object@2.0.2 (MIT)
     Copyright (c) 2017 Menglin "Mark" Xu <mark@remarkablemark.org>
 trim-lines@3.0.1 (MIT)
     Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com>
@@ -250,13 +232,13 @@ unist-util-position@5.0.0 (MIT)
     Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
 unist-util-stringify-position@4.0.0 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
-unist-util-visit@5.1.0 (MIT)
+unist-util-visit@5.2.0 (MIT)
     Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
-unist-util-visit-parents@6.0.2 (MIT)
+unist-util-visit-parents@6.1.0 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
 vfile@6.0.3 (MIT)
     Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
-vfile-message@4.0.3 (MIT)
+vfile-message@4.0.4 (MIT)
     Copyright (c) Titus Wormer <tituswormer@gmail.com>
 zwitch@2.0.4 (MIT)
     Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
