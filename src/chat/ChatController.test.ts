@@ -153,10 +153,28 @@ describe('ChatController', () => {
     expect(messages().some((m) => m.message === 'late')).toBe(false);
   });
 
-  it('shows an apology for an empty answer', async () => {
-    const { controller, messages } = setup({ sendMessage: async () => ({ blocks: [] }) });
+  it('shows an apology when the answer carries no blocks array', async () => {
+    // A host that forgets `blocks` entirely still gets the explanatory bubble.
+    const { controller, messages } = setup({ sendMessage: async () => ({}) } as unknown as ChatDataSource);
     await controller.sendTurn('?');
     expect(messages()[0].message).toMatch(/wasn't able to produce an answer/);
+  });
+
+  it('ends a turn with an explicitly empty blocks array silently', async () => {
+    const { controller, messages } = setup({ sendMessage: async () => ({ blocks: [] }) });
+    await controller.sendTurn('?');
+    expect(messages()).toHaveLength(0);
+  });
+
+  it('reports failed turns through onTurnFailed so the composer can refill', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const onTurnFailed = vi.fn();
+    const { controller } = setup(
+      { sendMessage: async () => Promise.reject(new Error('nope')) },
+      { onTurnFailed },
+    );
+    await controller.sendTurn('Use the revised wording.');
+    expect(onTurnFailed).toHaveBeenCalledWith('Use the revised wording.');
   });
 
   it('falls back to the default error text when formatError throws', async () => {

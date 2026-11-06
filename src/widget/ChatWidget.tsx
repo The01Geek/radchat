@@ -23,12 +23,19 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import Chatbot from 'react-chatbot-kit';
+import chatbotKit from 'react-chatbot-kit';
 import 'react-chatbot-kit/build/main.css';
 import './chat.css';
 
-import type { ChatWidgetHandle, ChatWidgetOptions, LayoutMode, OpenOptions } from '../types';
+import type { Block, ChatWidgetHandle, ChatWidgetOptions, LayoutMode, OpenOptions } from '../types';
+
+// Depending on the consumer's interop, the kit's default export is either the
+// Chatbot class (webpack/babel) or the whole CJS namespace object (Vite and
+// Node ESM, which map `default` to module.exports — a webpack build whose
+// exports sit behind getters the named-export lexer can't see). Unwrap both.
+const Chatbot = ((chatbotKit as { Chatbot?: typeof chatbotKit }).Chatbot ?? chatbotKit);
 import {
+  answerToMessages,
   ChatController,
   botMessage,
   createKitAdapters,
@@ -217,18 +224,36 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
     storage.setJSON('geometry', { position, dimensions: { width: dimensions.width, height: dimensions.height } });
   }, [storage, position, dimensions.width, dimensions.height, isDragging, isResizing]);
 
-  // Keep the window on screen when the browser is resized.
-  useEffect(() => {
-    const handleWindowResize = () => {
-      setDimensions((prev) => (prev.maxWidth === window.innerWidth ? prev : { ...prev, maxWidth: window.innerWidth }));
-      setPosition((prev) => {
-        const next = clampPosition(prev, dimensions);
-        return next.x === prev.x && next.y === prev.y ? prev : next;
-      });
-    };
-    window.addEventListener('resize', handleWindowResize);
-    return () => window.removeEventListener('resize', handleWindowResize);
+  // Keep the window inside the live viewport.
+  const keepInsideViewport = useCallback(() => {
+    setDimensions((prev) => (prev.maxWidth === window.innerWidth ? prev : { ...prev, maxWidth: window.innerWidth }));
+    setPosition((prev) => {
+      const next = clampPosition(prev, dimensions);
+      return next.x === prev.x && next.y === prev.y ? prev : next;
+    });
   }, [dimensions]);
+
+  // Keep the window on screen when the browser is resized. The visual
+  // viewport matters separately: the on-screen keyboard and a mobile URL bar
+  // change only it, and mobile viewports can settle to their final size after
+  // the window's resize event fired (emulated ones never fire a second one).
+  useEffect(() => {
+    window.addEventListener('resize', keepInsideViewport);
+    const vv = typeof visualViewport === 'undefined' ? null : visualViewport;
+    vv?.addEventListener('resize', keepInsideViewport);
+    return () => {
+      window.removeEventListener('resize', keepInsideViewport);
+      vv?.removeEventListener('resize', keepInsideViewport);
+    };
+  }, [keepInsideViewport]);
+
+  // The viewport at first render can differ from the one at open time — mobile
+  // emulation settles the layout viewport late, and a restored geometry may
+  // come from a larger window — and settling does not always fire a resize.
+  // Re-clamp each time the window opens so it never appears offscreen.
+  useEffect(() => {
+    if (isOpen) keepInsideViewport();
+  }, [isOpen, keepInsideViewport]);
 
   const handleHeaderMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (layoutMode !== 'floating' || e.button !== 0) return;
@@ -308,6 +333,11 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
       if (!canPersistConversation) return;
       if (id) storage.set('conversation', id);
       else storage.remove('conversation');
+    },
+    onTurnFailed: (failedText) => {
+      const input = rootRef.current?.querySelector<HTMLInputElement>('.react-chatbot-kit-chat-input');
+      // Only refill when the composer is still empty — never overwrite typing.
+      if (input && !input.value) setChatInputValue(input, failedText);
     },
   };
   useLayoutEffect(() => {
@@ -421,6 +451,23 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
     isOpenRef.current = isOpen;
   });
 
+  const hasOpenedRef = useRef(hasOpened);
+  useLayoutEffect(() => {
+    hasOpenedRef.current = hasOpened;
+  });
+
+
+  const appendBlocks = useCallback(
+    (blocks: Block[]) => {
+      if (!blocks.length) return;
+      // Before the first open the Chatbot is not mounted and the controller is
+      // not bound; buffering into initialMessages seeds the transcript at mount.
+      if (hasOpenedRef.current) controller.addMessages(...answerToMessages(blocks));
+      else setInitialMessages((prev) => [...prev, ...answerToMessages(blocks)]);
+    },
+    [controller],
+  );
+
   const open = useCallback(
     (options: OpenOptions = {}) => {
       if (options.startNewConversation) controller.newConversation();
@@ -441,8 +488,9 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
       isOpen: () => isOpenRef.current,
       newConversation: () => controller.newConversation(),
       setLayout: changeLayout,
+      appendBlocks,
     }),
-    [open, setOpen, controller, changeLayout],
+    [open, setOpen, controller, changeLayout, appendBlocks],
   );
 
   // ---- rendering ----------------------------------------------------------------
@@ -482,7 +530,11 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
           overflow: 'hidden',
           minWidth: `${dimensions.minWidth}px`,
           minHeight: `${dimensions.minHeight}px`,
-          maxHeight: `${dimensions.maxHeight}px`,
+          // A window remembered from a larger screen must never outgrow the
+          // viewport; percentages (the fixed containing block is the viewport)
+          // keep it fitted even when no resize event ever arrives.
+          maxWidth: '100%',
+          maxHeight: `min(${dimensions.maxHeight}px, 100%)`,
         }
       : layoutMode === 'sidebar'
         ? { width: `${dimensions.width}px` }

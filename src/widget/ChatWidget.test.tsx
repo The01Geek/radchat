@@ -58,6 +58,58 @@ describe('ChatWidget', () => {
     expect(ref.current!.isOpen()).toBe(false);
   });
 
+  it('re-clamps the floating window into the viewport when it opens', () => {
+    localStorage.removeItem('clamp-test:geometry');
+    const ref = createRef<ChatWidgetHandle>();
+    const { container } = render(
+      <ChatWidget ref={ref} hideBubble storageKey="clamp-test" dataSource={createMockDataSource({ latencyMs: 0 })} />,
+    );
+    const float = () => container.querySelector<HTMLElement>('[role="dialog"]')!;
+    // jsdom's 1024×768 viewport: the default bottom-right spot fits fine.
+    act(() => ref.current!.open());
+    expect(parseFloat(float().style.left)).toBeGreaterThan(0);
+    act(() => ref.current!.close());
+
+    // Then the viewport shrinks without a resize event — mobile emulation
+    // settles the layout viewport late, and a restored geometry may come from
+    // a larger window. Opening must not leave the window offscreen.
+    Object.defineProperty(window, 'innerWidth', { value: 390, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 844, configurable: true });
+    act(() => ref.current!.open());
+    expect(float().style.left).toBe('40px'); // fully on screen: 390 − 350 wide
+    expect(parseFloat(float().style.top)).toBeLessThanOrEqual(344); // 844 − 500 tall
+    Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
+  });
+
+  it('re-clamps when only the visual viewport resizes', () => {
+    localStorage.removeItem('vv-clamp-test:geometry');
+    // jsdom has no visual viewport; the widget treats a missing one as absent.
+    const vv = new EventTarget();
+    Object.defineProperty(window, 'visualViewport', { value: vv, configurable: true });
+    try {
+      const ref = createRef<ChatWidgetHandle>();
+      const { container } = render(
+        <ChatWidget ref={ref} hideBubble storageKey="vv-clamp-test" dataSource={createMockDataSource({ latencyMs: 0 })} />,
+      );
+      const float = () => container.querySelector<HTMLElement>('[role="dialog"]')!;
+      act(() => ref.current!.open());
+      expect(parseFloat(float().style.left)).toBeGreaterThan(0);
+      // A window from a larger screen must shrink with the viewport — in CSS,
+      // so it fits even when no resize event fires.
+      expect(float().style.maxWidth).toBe('100%');
+
+      // The on-screen keyboard or a late-settling mobile viewport: no window
+      // resize event, only the visual viewport reports the narrower size.
+      Object.defineProperty(window, 'innerWidth', { value: 390, configurable: true });
+      act(() => vv.dispatchEvent(new Event('resize')));
+      expect(float().style.left).toBe('40px'); // fully on screen: 390 − 350 wide
+      Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+    } finally {
+      Reflect.deleteProperty(window, 'visualViewport');
+    }
+  });
+
   it('sends a question and renders a table answer from the data source', async () => {
     renderWidget();
     await send('What are the top products?');
@@ -281,5 +333,67 @@ describe('ChatWidget', () => {
 
     expect(await within(dialogB).findByText('from B')).toBeInTheDocument();
     expect(within(screen.getByRole('dialog', { name: 'A' })).queryByText('from B')).not.toBeInTheDocument();
+  });
+
+  describe('appendBlocks', () => {
+    it('buffers appends made before the first open and shows them on open', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} hideBubble initialOpen={false} dataSource={createMockDataSource({ latencyMs: 0 })} />);
+
+      act(() => ref.current!.appendBlocks([{ type: 'text', content: 'buffered card' }, { type: 'text', content: 'second card' }]));
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+      act(() => ref.current!.open());
+      expect(screen.getByText('buffered card')).toBeInTheDocument();
+      expect(screen.getByText('second card')).toBeInTheDocument();
+    });
+
+    it('appends to the live transcript while the widget is open', async () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} initialOpen dataSource={createMockDataSource({ latencyMs: 0 })} />);
+      await screen.findByText(/type/i);
+
+      act(() => ref.current!.appendBlocks([{ type: 'text', content: 'live card' }]));
+
+      expect(screen.getByText('live card')).toBeInTheDocument();
+      // The transcript still works after a live append.
+      await send('hello');
+      expect(await screen.findByText(/SELECT/i)).toBeInTheDocument();
+    });
+
+    it('routes custom block types through blockRenderers', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(
+        <ChatWidget
+          ref={ref}
+          initialOpen
+          dataSource={createMockDataSource({ latencyMs: 0 })}
+          blockRenderers={{ 'raddy-card': (block) => <div data-testid="card">card {String(block.cardId)}</div> }}
+        />,
+      );
+
+      act(() => ref.current!.appendBlocks([{ type: 'raddy-card', cardId: 'abc' }]));
+
+      expect(screen.getByTestId('card')).toHaveTextContent('card abc');
+    });
+
+    it('ignores an empty append', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} initialOpen dataSource={createMockDataSource({ latencyMs: 0 })} />);
+
+      expect(() => act(() => ref.current!.appendBlocks([]))).not.toThrow();
+    });
+
+    it('drops buffered blocks on a new conversation', () => {
+      const ref = createRef<ChatWidgetHandle>();
+      render(<ChatWidget ref={ref} initialOpen dataSource={createMockDataSource({ latencyMs: 0 })} />);
+
+      act(() => {
+        ref.current!.appendBlocks([{ type: 'text', content: 'to be dropped' }]);
+        ref.current!.newConversation();
+      });
+
+      expect(screen.queryByText('to be dropped')).not.toBeInTheDocument();
+    });
   });
 });

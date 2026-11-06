@@ -294,4 +294,10 @@ export interface ChatWidgetHandle {
   isOpen(): boolean;
   newConversation(): void;
   setLayout(layout: LayoutMode): void;
+  /**
+   * Append assistant blocks to the transcript without a user turn (host-driven
+   * messages). While the widget has never opened the blocks are buffered and
+   * appear when it first mounts; a new conversation drops the buffer.
+   */
+  appendBlocks(blocks: Block[]): void;
 }
