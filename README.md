@@ -125,7 +125,7 @@ An answer is a list of blocks:
 | --- | --- | --- |
 | Text | `{ type: 'text', content, label? }` | Markdown. With `label`, a collapsed disclosure such as "Executed SQL". |
 | Table | `{ type: 'table', headers, rows, column_formats? }` | A formatted table with CSV download and a compact view. Cells are strings or `null`. Formats: `currency`, `percent` (values are percentages, e.g. `24.8`), `integer`, `identity`, `average`, `general`, or `null` to detect. |
-| Chart | `{ type: 'chart', data, layout?, config? }` | A Plotly figure (traces and layout are passed through). Uses the `plotly.js-basic-dist-min` bundle: bar, line/scatter, and pie charts. |
+| Chart | `{ type: 'chart', data, layout?, config? }` | A Plotly figure (traces and layout are passed through). Uses the `plotly.js-basic-dist-min` bundle: bar, line/scatter, and pie charts. The mode bar and Plotly's "Upload to Cloud" button are off unless `config` turns them on. |
 | Custom | `{ type: 'anything-else', ... }` | Your renderer from `blockRenderers`. Unknown types without a renderer are skipped. |
 
 An answer made only of plain text blocks renders as a single chat bubble. Anything else renders in a wider bubble that fits tables and charts.
