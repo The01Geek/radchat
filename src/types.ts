@@ -250,6 +250,14 @@ export interface ChatWidgetOptions {
   initialOpen?: boolean | 'remember';
   /** Called when the widget opens or closes. */
   onOpenChange?(open: boolean): void;
+  /**
+   * Called when a new conversation starts: the header's "New conversation"
+   * button, the built-in `reset` command, the handle's `newConversation()`, or
+   * `open({ startNewConversation: true })`. The widget resets first; the host
+   * uses this to drop whatever state its own transcript features keyed to the
+   * old conversation.
+   */
+  onNewConversation?(): void;
 
   /**
    * Prefix for localStorage keys (position, size, layout, open state, current

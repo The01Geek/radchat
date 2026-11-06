@@ -215,6 +215,26 @@ describe('ChatWidget', () => {
     expect(screen.getByText('Welcome text')).toBeInTheDocument();
   });
 
+  it('calls onNewConversation for every way a new conversation starts', async () => {
+    const user = userEvent.setup();
+    const onNewConversation = vi.fn();
+    const { ref } = renderWidget({ welcomeMessage: 'Welcome text', onNewConversation });
+    await send('What are the top products?');
+    await screen.findByText('House Blend 1 kg');
+
+    await user.click(screen.getByRole('button', { name: 'New conversation' }));
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+
+    await send('/reset');
+    expect(onNewConversation).toHaveBeenCalledTimes(2);
+
+    act(() => ref.current!.newConversation());
+    expect(onNewConversation).toHaveBeenCalledTimes(3);
+
+    act(() => ref.current!.open({ startNewConversation: true }));
+    expect(onNewConversation).toHaveBeenCalledTimes(4);
+  });
+
   it('switches layout from the menu and remembers it', async () => {
     const user = userEvent.setup();
     renderWidget({ storageKey: 'test-widget' });

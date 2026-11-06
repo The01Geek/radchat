@@ -321,6 +321,9 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
       setChatResetKey((k) => k + 1);
       setShowHistory(false);
       focusChatInput(100);
+      // Last: the widget has reset, so whatever the host re-derives from the
+      // fresh conversation lands on the transcript that survives.
+      props.onNewConversation?.();
     },
     onOpenHistory: () => {
       if (!historyAvailable) return false;
