@@ -251,11 +251,16 @@ export interface ChatWidgetOptions {
   /** Called when the widget opens or closes. */
   onOpenChange?(open: boolean): void;
   /**
-   * Called when a new conversation starts: the header's "New conversation"
-   * button, the built-in `reset` command, the handle's `newConversation()`, or
-   * `open({ startNewConversation: true })`. The widget resets first; the host
-   * uses this to drop whatever state its own transcript features keyed to the
-   * old conversation.
+   * Called after a new conversation has started: the header's "New conversation"
+   * button, the built-in `reset` command, a command calling `newConversation`, the
+   * handle's `newConversation()`, or `open({ startNewConversation: true })`. The
+   * old transcript is gone by then, so the host can drop state keyed to it, and
+   * `appendBlocks` from here lands on the new conversation (on a widget not yet
+   * opened, the blocks wait for the first open).
+   *
+   * Several resets in one update report once. Not called when History opens a
+   * stored conversation or `/clear` empties the display. An error it throws
+   * synchronously is logged and does not affect the widget.
    */
   onNewConversation?(): void;
 

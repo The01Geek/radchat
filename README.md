@@ -70,7 +70,7 @@ const chat = useRef<ChatWidgetHandle>(null);
 <ChatWidget ref={chat} dataSource={dataSource} hideBubble />
 ```
 
-The handle has `open(options?)`, `close()`, `toggle()`, `isOpen()`, `newConversation()`, and `setLayout(layout)`. `open` accepts `command` (run a slash command), `prefillInput` (fill the input without sending), and `startNewConversation`.
+The handle has `open(options?)`, `close()`, `toggle()`, `isOpen()`, `newConversation()`, `setLayout(layout)`, and `appendBlocks(blocks)`. `open` accepts `command` (run a slash command), `prefillInput` (fill the input without sending), and `startNewConversation`.
 
 ### Without React (standalone script)
 
@@ -192,7 +192,7 @@ If your agent already has its own client API, write a custom `ChatDataSource` in
 | `hideBubble` | `false` | Hide the launcher; open through the handle. |
 | `initialOpen` | `false` | `true`, `false`, or `'remember'` (restore the last state). |
 | `onOpenChange` | | Called with `true`/`false`. |
-| `onNewConversation` | | Called when a new conversation starts (header button, `/reset`, the handle, `startNewConversation`), after the widget resets. |
+| `onNewConversation` | | Called after a new conversation has started (header button, `/reset`, a command calling `newConversation`, the handle, `startNewConversation`), so `appendBlocks` from here lands on the fresh transcript. Not called for History switches or `/clear`. |
 | `storageKey` | `"radchat"` | Prefix for persisted keys; `false` disables persistence. |
 | `commands` | | Extra slash commands. |
 | `builtInCommands` | all | Subset of `help`, `clear`, `reset`, `history`. |
