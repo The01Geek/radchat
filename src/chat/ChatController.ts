@@ -181,7 +181,7 @@ export class ChatController {
   /** Incremented on new conversation; answers from an older generation are dropped. */
   private generation = 0;
   private disposed = false;
-  /** Number of user turns or commands handled; restore is skipped once the user has interacted. */
+  /** Number of user turns, commands and new conversations handled; restore is skipped once the user has interacted. */
   activity = 0;
 
   constructor(host: () => ControllerHost) {
@@ -313,6 +313,7 @@ export class ChatController {
 
   /** Abort pending answers, forget the conversation, and remount with the welcome message. */
   newConversation() {
+    this.activity++;
     this.abortAll();
     this.generation++;
     this.takeAttachments();

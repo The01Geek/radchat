@@ -14,6 +14,7 @@ First public version, to be released as 0.1.0.
 - Slash commands with keyboard autocomplete: built-in `/help`, `/clear`, `/reset`, `/history`; host commands that run locally or pass through to the data source; `enabledCommands` and `unknownCommands` options.
 - Image, document, and camera attachments with count, size, and type limits.
 - History panel with paging.
-- Imperative handle (`open`, `close`, `toggle`, `isOpen`, `newConversation`, `setLayout`) and `mount()` for non-React pages; standalone UMD build exposing `window.RadChat`.
+- Imperative handle (`open`, `close`, `toggle`, `isOpen`, `newConversation`, `setLayout`, `appendBlocks`) and `mount()` for non-React pages; standalone UMD build exposing `window.RadChat`.
+- `onNewConversation` option, called after a new conversation has started, so a host can drop its own state and re-add blocks to the fresh transcript.
 - Theming through `primaryColor` and `--radchat-*` CSS tokens.
 - Demo app, unit and component tests, and CI (lint, typecheck, tests, builds, license allowlist, secret scan).

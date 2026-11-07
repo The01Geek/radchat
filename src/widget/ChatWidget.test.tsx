@@ -1,7 +1,7 @@
 /**
  * ChatWidget smoke tests with the real react-chatbot-kit and the mock data source.
  */
-import { createRef } from 'react';
+import { Activity, createRef, StrictMode } from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -213,6 +213,221 @@ describe('ChatWidget', () => {
     await user.click(screen.getByRole('button', { name: 'New conversation' }));
     await waitFor(() => expect(screen.queryByText('House Blend 1 kg')).not.toBeInTheDocument());
     expect(screen.getByText('Welcome text')).toBeInTheDocument();
+  });
+
+  it('calls onNewConversation for every way a new conversation starts', async () => {
+    const user = userEvent.setup();
+    const onNewConversation = vi.fn();
+    const { ref } = renderWidget({ welcomeMessage: 'Welcome text', onNewConversation });
+    await send('What are the top products?');
+    await screen.findByText('House Blend 1 kg');
+
+    await user.click(screen.getByRole('button', { name: 'New conversation' }));
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+
+    await send('/reset');
+    expect(onNewConversation).toHaveBeenCalledTimes(2);
+
+    act(() => ref.current!.newConversation());
+    expect(onNewConversation).toHaveBeenCalledTimes(3);
+
+    act(() => ref.current!.open({ startNewConversation: true }));
+    expect(onNewConversation).toHaveBeenCalledTimes(4);
+  });
+
+  it('calls onNewConversation for a command that starts a new conversation', async () => {
+    const onNewConversation = vi.fn();
+    renderWidget({
+      onNewConversation,
+      commands: [{ name: 'fresh', description: 'Start over', run: ({ newConversation }) => newConversation() }],
+    });
+    await send('/fresh');
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onNewConversation once the fresh transcript is in place', async () => {
+    const user = userEvent.setup();
+    const oldAnswerSeen: boolean[] = [];
+    const { ref } = renderWidget({
+      welcomeMessage: 'Welcome text',
+      onNewConversation() {
+        oldAnswerSeen.push(!!screen.queryByText('House Blend 1 kg'));
+        ref.current!.appendBlocks([{ type: 'text', content: 'Added by the host' }]);
+      },
+    });
+    await send('What are the top products?');
+    await screen.findByText('House Blend 1 kg');
+
+    await user.click(screen.getByRole('button', { name: 'New conversation' }));
+
+    const added = await screen.findByText('Added by the host');
+    expect(oldAnswerSeen).toEqual([false]);
+    // The block joins the fresh transcript instead of replacing its welcome.
+    const welcome = await screen.findByText('Welcome text');
+    expect(welcome.compareDocumentPosition(added) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('lands blocks appended from onNewConversation on a widget that was never opened', async () => {
+    const ref = createRef<ChatWidgetHandle>();
+    render(
+      <ChatWidget
+        ref={ref}
+        hideBubble
+        dataSource={createMockDataSource({ latencyMs: 0 })}
+        onNewConversation={() => ref.current!.appendBlocks([{ type: 'text', content: 'Added by the host' }])}
+      />,
+    );
+
+    // Closed: the block waits for the first open.
+    act(() => ref.current!.newConversation());
+    expect(screen.queryByText('Added by the host')).not.toBeInTheDocument();
+    act(() => ref.current!.open());
+    expect(await screen.findByText('Added by the host')).toBeInTheDocument();
+  });
+
+  it('lands blocks appended from onNewConversation when the same call opens the widget', async () => {
+    const ref = createRef<ChatWidgetHandle>();
+    render(
+      <ChatWidget
+        ref={ref}
+        hideBubble
+        dataSource={createMockDataSource({ latencyMs: 0 })}
+        onNewConversation={() => ref.current!.appendBlocks([{ type: 'text', content: 'Added by the host' }])}
+      />,
+    );
+
+    act(() => ref.current!.open({ startNewConversation: true }));
+    expect(await screen.findByText('Added by the host')).toBeInTheDocument();
+  });
+
+  it('lands blocks appended from onNewConversation on a widget closed after opening', async () => {
+    const onNewConversation = vi.fn();
+    const { ref } = renderWidget({
+      onNewConversation() {
+        onNewConversation();
+        ref.current!.appendBlocks([{ type: 'text', content: 'Added by the host' }]);
+      },
+    });
+    act(() => ref.current!.close());
+
+    act(() => ref.current!.newConversation());
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+    act(() => ref.current!.open());
+    expect(await screen.findByText('Added by the host')).toBeInTheDocument();
+  });
+
+  it('reports each reset once under StrictMode, and not on mount', () => {
+    const ref = createRef<ChatWidgetHandle>();
+    const onNewConversation = vi.fn();
+    render(
+      <StrictMode>
+        <ChatWidget ref={ref} initialOpen dataSource={createMockDataSource({ latencyMs: 0 })} onNewConversation={onNewConversation} />
+      </StrictMode>,
+    );
+    expect(onNewConversation).not.toHaveBeenCalled();
+
+    act(() => ref.current!.newConversation());
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+
+    // Several resets in one update are one new conversation to the host.
+    act(() => {
+      ref.current!.newConversation();
+      ref.current!.newConversation();
+    });
+    expect(onNewConversation).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not report a reset again when a hidden Activity is shown', () => {
+    const ref = createRef<ChatWidgetHandle>();
+    const onNewConversation = vi.fn();
+    const dataSource = createMockDataSource({ latencyMs: 0 });
+    const tree = (mode: 'visible' | 'hidden') => (
+      <Activity mode={mode}>
+        <ChatWidget ref={ref} initialOpen dataSource={dataSource} onNewConversation={onNewConversation} />
+      </Activity>
+    );
+    const { rerender } = render(tree('visible'));
+    act(() => ref.current!.newConversation());
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+
+    rerender(tree('hidden'));
+    rerender(tree('visible'));
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a new conversation started while a saved one is still loading', async () => {
+    const saved = await createMockDataSource({ latencyMs: 0 }).getConversation!('demo-conversation-1');
+    let finishLoading!: (messages: typeof saved) => void;
+    localStorage.setItem('radchat:conversation', 'demo-conversation-1');
+    const ref = createRef<ChatWidgetHandle>();
+    render(
+      <ChatWidget
+        ref={ref}
+        initialOpen
+        dataSource={{
+          sendMessage: vi.fn(),
+          getConversation: () => new Promise((resolve) => (finishLoading = resolve)),
+        }}
+        onNewConversation={() => ref.current!.appendBlocks([{ type: 'text', content: 'Added by the host' }])}
+      />,
+    );
+
+    act(() => ref.current!.newConversation());
+    await act(async () => finishLoading(saved));
+
+    expect(await screen.findByText('Added by the host')).toBeInTheDocument();
+    expect(screen.queryByText('House Blend 1 kg')).not.toBeInTheDocument();
+    expect(localStorage.getItem('radchat:conversation')).toBeNull();
+  });
+
+  it('calls the latest onNewConversation after a re-render', () => {
+    const ref = createRef<ChatWidgetHandle>();
+    const first = vi.fn();
+    const second = vi.fn();
+    const dataSource = createMockDataSource({ latencyMs: 0 });
+    const { rerender } = render(<ChatWidget ref={ref} initialOpen dataSource={dataSource} onNewConversation={first} />);
+    rerender(<ChatWidget ref={ref} initialOpen dataSource={dataSource} onNewConversation={second} />);
+
+    act(() => ref.current!.newConversation());
+    expect(first).not.toHaveBeenCalled();
+    expect(second).toHaveBeenCalledTimes(1);
+  });
+
+  it('logs an onNewConversation error and keeps the widget working', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const failure = new Error('host bug');
+    const ref = createRef<ChatWidgetHandle>();
+    const onNewConversation = vi.fn(() => {
+      throw failure;
+    });
+    render(<ChatWidget ref={ref} hideBubble dataSource={createMockDataSource({ latencyMs: 0 })} onNewConversation={onNewConversation} />);
+
+    act(() => ref.current!.open({ startNewConversation: true }));
+
+    expect(ref.current!.isOpen()).toBe(true);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(consoleError).toHaveBeenCalledWith('[RadChat] onNewConversation failed:', failure);
+
+    // Still mounted and still reporting.
+    act(() => ref.current!.newConversation());
+    expect(onNewConversation).toHaveBeenCalledTimes(2);
+    consoleError.mockRestore();
+  });
+
+  it('does not call onNewConversation when History opens a conversation or /clear empties the display', async () => {
+    const user = userEvent.setup();
+    const onNewConversation = vi.fn();
+    renderWidget({ onNewConversation });
+
+    await user.click(screen.getByRole('button', { name: 'Menu' }));
+    await user.click(screen.getByRole('menuitem', { name: 'History' }));
+    await user.click(await screen.findByText('How is revenue defined?'));
+    await screen.findByText(/sum of/);
+
+    await send('/clear');
+    await waitFor(() => expect(screen.queryByText(/sum of/)).not.toBeInTheDocument());
+
+    expect(onNewConversation).not.toHaveBeenCalled();
   });
 
   it('switches layout from the menu and remembers it', async () => {

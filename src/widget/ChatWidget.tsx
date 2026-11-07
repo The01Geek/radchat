@@ -301,6 +301,28 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
   const [chatResetKey, setChatResetKey] = useState(0);
   const [conversationId, setConversationId] = useState<string | null>(null);
 
+  // Tell the host from an effect, not from the reset itself: until this commit
+  // lands, the old transcript is still mounted and anything appended goes down
+  // with it. Its own counter, because History switches bump chatResetKey too.
+  // The last reported count keeps a re-run effect (a hidden <Activity> shown
+  // again) from reporting a reset that did not happen. A host's error is logged
+  // here so it cannot take the widget down with it.
+  const [newConversationCount, setNewConversationCount] = useState(0);
+  const reportedCountRef = useRef(0);
+  const onNewConversationRef = useRef(props.onNewConversation);
+  useLayoutEffect(() => {
+    onNewConversationRef.current = props.onNewConversation;
+  });
+  useEffect(() => {
+    if (newConversationCount === reportedCountRef.current) return;
+    reportedCountRef.current = newConversationCount;
+    try {
+      onNewConversationRef.current?.();
+    } catch (error) {
+      console.error('[RadChat] onNewConversation failed:', error);
+    }
+  }, [newConversationCount]);
+
   const focusChatInput = useCallback((delay = 300) => {
     setTimeout(() => {
       rootRef.current?.querySelector<HTMLInputElement>('.react-chatbot-kit-chat-input')?.focus();
@@ -321,6 +343,10 @@ export const ChatWidget = forwardRef<ChatWidgetHandle, ChatWidgetOptions>(functi
       setChatResetKey((k) => k + 1);
       setShowHistory(false);
       focusChatInput(100);
+      // A restore still loading never set the conversation ID, so nothing else
+      // clears the saved one, and the next load would bring it back.
+      storage.remove('conversation');
+      setNewConversationCount((n) => n + 1);
     },
     onOpenHistory: () => {
       if (!historyAvailable) return false;
